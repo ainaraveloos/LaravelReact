@@ -54,7 +54,7 @@ class HandleInertiaRequests extends Middleware
                     'is_dna' => $request->user()->is_dna
                 ] : null,
             ],
-            'ziggy' => fn () => [
+            'ziggy' => fn() => [
                 ...(new Ziggy)->toArray(),
                 'location' => $request->url(),
             ],

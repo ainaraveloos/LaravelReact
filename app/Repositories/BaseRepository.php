@@ -44,9 +44,13 @@ class BaseRepository implements CrudInterface
         $results = $query->get();
         if ($label) {
             $results = $results->map(function ($item) use ($value, $label) {
-                return method_exists($item, 'toValueTextArray')
-                    ? $item->toValueTextArray($value, $label)
-                    : $item;
+                if (method_exists($item, 'toValueTextArray')) {
+                    return $item->toValueTextArray($value, $label);
+                }
+                // Fallback: map to generic { value, label } using provided fields
+                $val = data_get($item, $value);
+                $lab = data_get($item, $label);
+                return ['value' => $val, 'label' => $lab];
             });
         }
         return $results;

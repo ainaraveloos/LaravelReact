@@ -24,6 +24,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'user_group_id',
     ];
 
     /**
@@ -39,7 +40,7 @@ class User extends Authenticatable
     protected $appends = [
         'is_you',
         'privileges_name',
-        'group_user_name',
+        'user_group_name',
     ];
 
     /**
@@ -58,7 +59,7 @@ class User extends Authenticatable
 
     public function scopeFilter($query, $search = null)
     {
-        if (!is_null($search)){
+        if (!is_null($search)) {
             $query->where(function ($q) use ($search) {
                 $q->where('users.name', 'LIKE', "%{$search}%")
                     ->orWhere('users.email', 'LIKE', "%{$search}%");
@@ -75,9 +76,9 @@ class User extends Authenticatable
     {
         return $this->belongsTo(UserGroup::class, 'user_group_id');
     }
-    public function getGroupUserNameAttribute()
+    public function getUserGroupNameAttribute()
     {
-        return $this->group->name;
+        return $this->group?->name;
     }
 
     public function scopeIsdna($query)

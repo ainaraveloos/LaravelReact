@@ -1,0 +1,351 @@
+<template>
+    <div class="space-y-6">
+        <div
+            v-for="module in privilege"
+            :key="module.key"
+            class="border border-gray-200 rounded-lg p-8 bg-gray-100"
+        >
+            <!-- Headzr module -->
+            <div class="flex items-start justify-between mb-6">
+                <div class="flex items-center">
+                    <div
+                        class="w-10 h-10 rounded-lg bg-gray-200 flex items-center justify-center mr-4"
+
+                    >
+                    <!-- :style="{
+                            background: `linear-gradient(to right, ${module.gradient[0]}, ${module.gradient[1]})`,
+                        }" -->
+                        <font-awesome-icon
+                            :icon="module.icon || 'fa-solid fa-cog'"
+                            class="text-lg"
+
+                        />
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-lg text-gray-600 mb-1">
+                            {{ module.title }}
+                        </h4>
+                        <div class="flex items-center space-x-2">
+                            <div
+                                class="w-2 h-2 rounded-full"
+                                :class="getModuleStatusColor(module.key)"
+                            ></div>
+                            <p class="text-sm text-gray-600">
+                                {{ getModuleStatusText(module.key) }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Check principal pour toutmodule -->
+                <div class="flex items-center">
+                    <div
+                        class="relative cursor-pointer transition-all duration-300 hover:scale-110"
+                        @click="
+                            toggleModule(
+                                module.key,
+                                !isModuleFullyChecked(module.key)
+                            )
+                        "
+                    >
+                        <a-checkbox
+                            :checked="isModuleFullyChecked(module.key)"
+                            :indeterminate="
+                                isModulePartiallyChecked(module.key)
+                            "
+                            @change="
+                                (e) =>
+                                    toggleModule(module.key, e.target.checked)
+                            "
+                            class="scale-150 custom-checkbox absolute opacity-0 pointer-events-none"
+                        />
+                        <div
+                            class="w-10 h-10 rounded-lg flex items-center justify-center transition-all duration-300"
+                            :class="getModuleCheckBackground(module.key)"
+                        >
+                            <font-awesome-icon
+                                :icon="getModuleLockIcon(module.key)"
+                                class="text-white text-sm"
+                            />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sousmodules -->
+            <div
+                v-if="module.children && module.children.length > 0"
+                class="grid xl:grid-cols-3 lg:grid-cols-2 md:grid-cols-1 gap-4"
+            >
+                <div
+                    v-for="child in module.children"
+                    :key="child.key"
+                    class="bg-white border border-gray-200 transition-all duration-500 hover:border-blue-400 shadow-inner hover:shadow-md rounded-lg p-4"
+                >
+                    <div class="flex items-start justify-between mb-3">
+                        <div>
+                            <span
+                                class="text-base font-medium text-blue-500 block"
+                            >
+                                {{ child.title }}
+                            </span>
+                            <div class="flex items-center space-x-2 mt-1">
+                                <span class="text-xs text-gray-500">
+                                    {{ getChildStatusText(child.key) }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Check pour le module enfant -->
+                        <div class="flex items-center">
+                            <a-checkbox
+                                :checked="isChildFullyChecked(child.key)"
+                                :indeterminate="
+                                    isChildPartiallyChecked(child.key)
+                                "
+                                @change="
+                                    (e) =>
+                                        toggleChild(child.key, e.target.checked)
+                                "
+                                class="scale-110"
+                            />
+                        </div>
+                    </div>
+
+                    <!-- a-tree pour les privilèges détaillés -->
+                    <div
+                        v-if="child.children && child.children.length > 0"
+                        class="mt-3 p-3 bg-gray-50 rounded-lg border border-gray-200"
+                    >
+                        <a-tree
+                            :checkedKeys="getChildCheckedKeys(child.key)"
+                            checkable
+                            default-expand-all
+                            auto-expand-parent
+                            :tree-data="[child]"
+                            :selectable="false"
+                            :show-icon="false"
+                            :block-node="true"
+                            @check="
+                                (allKeys, info) =>
+                                    onCheckChild(child.key, allKeys)
+                            "
+                            class="custom-tree"
+                        />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script setup>
+const props = defineProps({
+    privilege: { type: Array,required: true },
+    selectedPrivileges: { type: Array,required: true },
+});
+
+const emit = defineEmits(["update:selectedPrivileges"]);
+
+// Fonctions utilitaires
+const getAllModuleRoutes = (module) => {
+    let allRoutes = [];
+    if (module.routes) { allRoutes.push(...module.routes)}
+    if (module.children) {
+        module.children.forEach((child) => {
+            if (child.routes) { allRoutes.push(...child.routes)}
+            if (child.children) {
+                child.children.forEach((grandChild) => {
+                    if (grandChild.routes) { allRoutes.push(...grandChild.routes)}
+                });
+            }
+        });
+    }
+    return allRoutes;
+};
+
+const getAllChildRoutes = (child) => {
+    let allRoutes = [];
+    if (child.routes) { allRoutes.push(...child.routes)}
+    if (child.children) {
+        child.children.forEach((grandChild) => {
+            if (grandChild.routes) { allRoutes.push(...grandChild.routes)}
+        });
+    }
+    return allRoutes;
+};
+
+// Fonctions de statut
+const isModuleFullyChecked = (moduleKey) => {
+    const module = props.privilege.find((m) => m.key === moduleKey);
+    if (!module || !module.children) return false;
+    const allModuleRoutes = getAllModuleRoutes(module);
+    return allModuleRoutes.every((route) => props.selectedPrivileges.includes(route)
+    );
+};
+
+const isModulePartiallyChecked = (moduleKey) => {
+    const module = props.privilege.find((m) => m.key === moduleKey);
+    if (!module || !module.children) return false;
+    const allModuleRoutes = getAllModuleRoutes(module);
+    const hasChecked = allModuleRoutes.some((route) => props.selectedPrivileges.includes(route));
+    const allChecked = allModuleRoutes.every((route) => props.selectedPrivileges.includes(route));
+    return hasChecked && !allChecked;
+};
+
+const isChildFullyChecked = (childKey) => {
+    const child = props.privilege.flatMap((m) => m.children || []).find((c) => c.key === childKey);
+    if (!child) return false;
+    const allChildRoutes = getAllChildRoutes(child);
+    return allChildRoutes.every((route) => props.selectedPrivileges.includes(route));
+};
+
+const isChildPartiallyChecked = (childKey) => {
+    const child = props.privilege
+        .flatMap((m) => m.children || [])
+        .find((c) => c.key === childKey);
+    if (!child) return false;
+    const allChildRoutes = getAllChildRoutes(child);
+    const hasChecked = allChildRoutes.some((route) =>
+        props.selectedPrivileges.includes(route)
+    );
+    const allChecked = allChildRoutes.every((route) => props.selectedPrivileges.includes(route));
+    return hasChecked && !allChecked;
+};
+
+const getChildCheckedKeys = (childKey) => {
+    const child = props.privilege .flatMap((m) => m.children || []) .find((c) => c.key === childKey);
+    if (!child) return [];
+    const allChildRoutes = getAllChildRoutes(child);
+    // Retourner les routes qui sont dans selectedPrivileges
+    return props.selectedPrivileges.filter((privilege) => allChildRoutes.includes(privilege)
+    );
+};
+
+// Fonctions de couleur et statut
+const getModuleStatusColor = (moduleKey) => {
+    if (isModuleFullyChecked(moduleKey)) { return "bg-gray-600"}
+    else if (isModulePartiallyChecked(moduleKey)) { return "bg-gray-500"}
+    else { return "bg-gray-400"}
+};
+const getModuleStatusText = (moduleKey) => {
+    if (isModuleFullyChecked(moduleKey)) { return "Tous les modules sélectionnés"}
+    else if (isModulePartiallyChecked(moduleKey)) { return "Module partiellement selectionnée"}
+    else { return "Aucun module sélectionné"}
+};
+
+const getChildStatusText = (childKey) => {
+    if (isChildFullyChecked(childKey)) { return "Tous les privilèges sélectionnés"}
+    else if (isChildPartiallyChecked(childKey)) { return "Privilèges partiellement sélectionnés"}
+    else { return "Aucun privilège sélectionné"}
+};
+
+const getModuleLockIcon = (moduleKey) => {
+    if (isModuleFullyChecked(moduleKey)) { return "fa-solid fa-lock-open"}
+    else if (isModulePartiallyChecked(moduleKey)) { return "fa-solid fa-lock-open"}
+    else { return "fa-solid fa-lock"}
+};
+
+const getModuleCheckBackground = (moduleKey) => {
+    if (isModuleFullyChecked(moduleKey)) { return "bg-green-500"}
+    else if (isModulePartiallyChecked(moduleKey)) { return "bg-yellow-500"}
+    else { "bg-gray-400"}
+};
+
+const toggleModule = (moduleKey, checked) => {
+    const module = props.privilege.find((m) => m.key === moduleKey);
+    if (!module || !module.children) return;
+
+    const allModuleRoutes = getAllModuleRoutes(module);
+    const childKeys = module.children.map((child) => child.key);
+
+    const rest = props.selectedPrivileges.filter((k) => {
+        if (allModuleRoutes.includes(k)) return false;
+        if (childKeys.includes(k)) return false;
+        return true;
+    });
+
+    const newPrivileges = checked ? Array.from(new Set([...rest, ...allModuleRoutes])) : rest;
+
+    emit("update:selectedPrivileges", newPrivileges);
+};
+
+const toggleChild = (childKey, checked) => {
+    const child = props.privilege.flatMap((m) => m.children || []).find((c) => c.key === childKey);
+    if (!child) return;
+
+    const allChildRoutes = getAllChildRoutes(child);
+    const rest = props.selectedPrivileges.filter((k) => !allChildRoutes.includes(k));
+    const newPrivileges = checked ? Array.from(new Set([...rest, ...allChildRoutes])) : rest;
+
+    emit("update:selectedPrivileges", newPrivileges);
+};
+
+const onCheckChild = (childKey, newKeysForChild) => {
+    const child = props.privilege.flatMap((m) => m.children || []).find((c) => c.key === childKey);
+    if (!child) return;
+
+    const allChildRoutes = getAllChildRoutes(child);
+
+    // Si newKeysForChild est vide, on supprime toutes les routes de cet enfant
+    if (newKeysForChild.length === 0) {
+        const rest = props.selectedPrivileges.filter((k) => !allChildRoutes.includes(k));
+        emit("update:selectedPrivileges", rest);
+        return;
+    }
+
+    // Convertir les keys en routes
+    const newRoutes = [];
+    newKeysForChild.forEach((key) => {
+        // Chercher la route correspondante à cette key
+        const route = allChildRoutes.find((route) => route === key);
+        if (route) {
+            newRoutes.push(route);
+        }
+    });
+
+    // Remplacer les routes de cet enfant par les nouvelles
+    const rest = props.selectedPrivileges.filter((k) => !allChildRoutes.includes(k));
+
+    const newPrivileges = Array.from(new Set([...rest, ...newRoutes]));
+    emit("update:selectedPrivileges", newPrivileges);
+};
+</script>
+
+<style scoped>
+/* Styles pour l'arbre personnalisé */
+.custom-tree {
+    font-size: 0.875rem;
+}
+
+.custom-tree :deep(.ant-tree-node-content-wrapper) {
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.custom-tree :deep(.ant-tree-node-content-wrapper:hover) {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.custom-tree :deep(.ant-tree-checkbox) {
+    margin-right: 8px;
+}
+
+.custom-tree :deep(.ant-tree-checkbox-checked .ant-tree-checkbox-inner) {
+    background-color: #6b7280;
+    border-color: #6b7280;
+}
+
+/* Transitions fluides */
+.transition-all {
+    transition: all 0.2s ease;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>

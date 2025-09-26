@@ -16,9 +16,8 @@ class UserGroupService extends BaseService
     }
 
     // Your service methods go here
-    protected function initializeFilters(): void
+    public function initializeFilters(): void
     {
-        $this->setFilterValue('id')
-            ->setFilterLabel('name');
+        $this->setFilterValue('id')->setFilterLabel('name');
     }
 }

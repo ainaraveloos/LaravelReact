@@ -31,4 +31,7 @@ export interface DataTableProps<T> {
     actions?: Action<T>[];
     filters?: Record<string, any>;
     endpoint: string;
+    selectableRows?: boolean;
+    selectedIds?: Array<string | number>;
+    onSelectionChange?: (ids: Array<string | number>) => void;
 }

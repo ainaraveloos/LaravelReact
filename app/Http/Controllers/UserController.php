@@ -17,9 +17,9 @@ class UserController extends Controller
 {
 
     private $service;
-    private $usergroupService;
+    private UserGroupService $usergroupService;
 
-    public function __construct(UserService $userService,UserGroupService $userGroupService)
+    public function __construct(UserService $userService, UserGroupService $userGroupService)
     {
         $this->usergroupService = $userGroupService;
         $this->service = $userService;
@@ -29,9 +29,9 @@ class UserController extends Controller
     {
         $filtre = ExtractFiltre::extractFilter($request);
         $output = $this->service->fetchUsuer($filtre);
-        $user_groupes = $this->usergroupService->getAll([]);
+        $user_groupes = $this->usergroupService->getAll();
         return Inertia::render("User/Index", [
-            'data' =>$output ,
+            'data' => $output,
             'user_groupes' => $user_groupes,
             "filters" => [],
             "flash" => session('flash', [])
@@ -62,36 +62,35 @@ class UserController extends Controller
     }
     public function show(User $user)
     {
-        return back()->with( [ 'flash' => $user ]);
+        return back()->with(['flash' => $user]);
     }
 
-    public function update(Request $request,int $userID)
+    public function update(Request $request, User $user)
     {
-
-        $user = User::find($userID);
-        $data=$request->validate([
+        $data = $request->validate([
             'name' => 'required|string|max:255',
             'email' => "required|string|lowercase|email|max:255|unique:users,email,{$user->id}",
             'password' => ['nullable', 'confirmed', Rules\Password::defaults()],
             'user_group_id' => 'required|exists:user_groups,id',
         ]);
-        if($request->password) $data["password"] = Hash::make($request->password);
+        if ($request->filled('password')) {
+            $data['password'] = Hash::make($data['password']);
+        } else { unset($data['password']);}
 
-        $this->service->update($user, $data);
+        $user->update($data);
 
         return back()->with("message.success", "Enrégistrement effectuer");
     }
 
-    public function destroy(int $userID)
+    public function destroy(User $user)
     {
-        $utilisateur= User::find($userID);
-        if(User::query()->count() <= 1 || $utilisateur->is_you)
+        if (User::query()->count() <= 1 || $user->is_you)
             return back()->with("message.error", "Impossible de supprimer cet utilisateur");
 
-            $output = $this->service->delete($utilisateur);
-            if (!empty($output['error'])) {
-                return back()->with('message.error', $output['message']);
-            }
-            return back()->with('message.success', $output['message']);
+        $output = $this->service->delete($user);
+        if (!empty($output['error'])) {
+            return back()->with('message.error', $output['message']);
         }
+        return back()->with('message.success', $output['message']);
+    }
 }
