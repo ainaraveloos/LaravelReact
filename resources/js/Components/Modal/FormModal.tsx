@@ -1,14 +1,19 @@
-import { Button } from "@/Components/ui/button";
-import { useState,useEffect } from "react";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/Components/ui/dialog";
 import type { FormModalProps } from "@/types/Modal";
+import { Modal } from "antd";
+import { useEffect, useState } from "react";
 
-const sizeToMaxWidthClass: Record< NonNullable<FormModalProps<any>["size"]>, string > = {
-    sm: "sm:max-w-sm",
-    md: "sm:max-w-md",
-    lg: "sm:max-w-lg",
-    xl: "sm:max-w-xl",
-    "2xl": "sm:max-w-2xl",
+const sizeToWidth: Record<
+    NonNullable<FormModalProps<any>["size"]> | "large" | "full_screen",
+    number | string
+> = {
+    // Match Vue sample defaults and keep backward compatibility
+    sm: 600,
+    md: 800,
+    lg: 1000,
+    xl: 720,
+    "2xl": 880,
+    large: 1000, // alias to lg
+    full_screen: "100%",
 };
 
 export default function FormModal<T extends object>({
@@ -41,32 +46,49 @@ export default function FormModal<T extends object>({
         }
     };
 
-    const effectiveSubmitLabel = submitLabel ?? (mode === "create" ? "Créer" : "Mettre à jour");
+    const effectiveSubmitLabel =
+        submitLabel ?? (mode === "create" ? "Créer" : "Mettre à jour");
+
+    // Normalize size, support alias 'large' and special 'full_screen'
+    const normalizedSize = (
+        size === ("large" as any) ? ("lg" as any) : size
+    ) as keyof typeof sizeToWidth;
+    const modalWidth =
+        sizeToWidth[size as keyof typeof sizeToWidth] ??
+        sizeToWidth[normalizedSize] ??
+        1000;
+    const isFullscreen = size === ("full_screen" as any);
+
     return (
-        <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className={`${sizeToMaxWidthClass[size]}`}>
-                {(title || description) && (
-                    <DialogHeader>
-                        {title && <DialogTitle>{title}</DialogTitle>}
-                        {description && <DialogDescription>{description}</DialogDescription>}
-                    </DialogHeader>
-                )}
-
-                {/* Contenu du Modal */}
-                <div className="space-y-4">
-                    {render({ values, setValues, mode })}
-                </div>
-
-                {/* Footer par defaut du modal */}
-                <DialogFooter>
-                    <Button variant="outline" onClick={() => onOpenChange(false)} disabled={submitting} >
-                        {cancelLabel}
-                    </Button>
-                    <Button variant="default" onClick={handleSubmit} disabled={submitting}>
-                        {submitting ? "Soumission ..." : effectiveSubmitLabel}
-                    </Button>
-                </DialogFooter>
-            </DialogContent>
-        </Dialog>
+        <Modal
+            open={open}
+            onCancel={() => onOpenChange(false)}
+            title={title}
+            okText={effectiveSubmitLabel}
+            cancelText={cancelLabel}
+            onOk={handleSubmit}
+            confirmLoading={submitting}
+            width={modalWidth}
+            style={
+                isFullscreen
+                    ? { top: 0, paddingBottom: 0, margin: 0 }
+                    : undefined
+            }
+            bodyStyle={
+                isFullscreen
+                    ? { height: "calc(100vh - 120px)", overflow: "auto" }
+                    : undefined
+            }
+            wrapClassName={isFullscreen ? "full-modal" : undefined}
+            maskClosable={!submitting}
+            destroyOnClose
+        >
+            {description && (
+                <div className="text-sm text-gray-500 mb-3">{description}</div>
+            )}
+            <div className="space-y-4">
+                {render({ values, setValues, mode })}
+            </div>
+        </Modal>
     );
 }

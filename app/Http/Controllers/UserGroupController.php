@@ -23,12 +23,13 @@ class UserGroupController extends Controller
         $filtre = ExtractFiltre::extractFilter($request);
         $output = $this->service->getAll($filtre);
 
-        return Inertia::render('UserGroup/ListeGroup', [
+        return Inertia::render('UserGroup/Index', [
             'data' => $output,
             'privilege' => UserGroup::$privileges,
             "filters" => [
                 "search" => $request->search
             ],
+            'flash' => session('flash', [])
         ]);
     }
     public function create()
@@ -50,6 +51,14 @@ class UserGroupController extends Controller
             $output['error'] ? 'message.error' : 'message.success',
             $output['message']
         );
+    }
+    public function show(int $userGroupId)
+    {
+        $userGroup = UserGroup::find($userGroupId);
+        return back()->with([
+            'flash' =>
+                ['usergroup' => $userGroup]
+        ]);
     }
 
     public function edit(string $id)
@@ -74,20 +83,20 @@ class UserGroupController extends Controller
         );
     }
 
-    public function show(int $userGroupId)
-    {
-        // Fetch the single user group
-        $selectedgroup = UserGroup::find($userGroupId);
+    // public function show(int $userGroupId)
+    // {
+    //     // Fetch the single user group
+    //     $selectedgroup = UserGroup::find($userGroupId);
 
-        return Inertia::render('UserGroup/ListeGroup', [
-            'selectedgroup' => $selectedgroup,
-            'data' => $this->service->getAll([]),
-            'privilege' => UserGroup::$privileges,
-            "filters" => [
-                "search" => request('search')
-            ],
-        ]);
-    }
+    //     return Inertia::render('UserGroup/ListeGroup', [
+    //         'selectedgroup' => $selectedgroup,
+    //         'data' => $this->service->getAll([]),
+    //         'privilege' => UserGroup::$privileges,
+    //         "filters" => [
+    //             "search" => request('search')
+    //         ],
+    //     ]);
+    // }
 
     public function destroy(int $userGroupId)
     {

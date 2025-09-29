@@ -1,11 +1,13 @@
 import { DataTable } from "@/Components/DataTable/DataTable";
-import { Button } from "@/Components/ui/button";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import type { PageProps } from "@/types";
 import type { Action, Column } from "@/types/DataTable";
 import { Head, router, usePage } from "@inertiajs/react";
+import { Button } from "antd";
 import { useEffect, useState } from "react";
-import { type UserGroupPayload } from "./Formulaire/UserGroupForm";
+import UserGroupForm, {
+    type UserGroupPayload,
+} from "./Formulaire/UserGroupForm";
 import type { UserGroupRow } from "./Types/Index";
 
 type PageData = {
@@ -18,6 +20,7 @@ type PageData = {
     };
     privilege: any[];
     filters: { search?: string };
+    flash?: any;
     selectedgroup?: {
         id: number | string;
         name: string;
@@ -27,61 +30,40 @@ type PageData = {
 
 export default function UserGroupIndex() {
     const page = usePage<PageProps & PageData>();
-    const { data, filters, privilege, selectedgroup } = page.props;
+    const { data, filters, privilege, flash } = page.props;
 
     const [open, setOpen] = useState(false);
     const [mode, setMode] = useState<"create" | "update">("create");
     const [initialValues, setInitialValues] = useState<UserGroupPayload>({
+        id: null,
         name: "",
         privileges: [],
     });
-
-    // Open update modal when selectedgroup is provided by backend (via show())
     useEffect(() => {
-        if (selectedgroup && selectedgroup.id) {
+        const f = flash as any;
+        if (f && f.usergroup && f.usergroup.id) {
+            const u = f.usergroup
             setMode("update");
             setInitialValues({
-                name: selectedgroup.name ?? "",
-                privileges: Array.isArray(selectedgroup.privileges)
-                    ? selectedgroup.privileges
-                    : [],
+                id: u.id,
+                name: u.name ?? "",
+                privileges: u.privileges ?? [],
             });
             setOpen(true);
         }
-    }, [selectedgroup]);
+    }, [flash]);
 
     const handleCreate = () => {
         setMode("create");
-        setInitialValues({ name: "", description: "", privileges: [] });
+        setInitialValues({ name: "", privileges: [] });
         setOpen(true);
     };
-
-    const handleSubmit = async (values: UserGroupPayload) => {
-        if (mode === "create") {
-            return new Promise<void>((resolve, reject) => {
-                router.post(route("group_user.store"), values, {
-                    preserveScroll: true,
-                    onSuccess: () => {
-                        setOpen(false);
-                        resolve();
-                    },
-                    onError: () => reject(),
-                });
-            });
-        } else if (selectedgroup && selectedgroup.id) {
-            return new Promise<void>((resolve, reject) => {
-                router.visit(route("group_user.update", selectedgroup.id), {
-                    method: "put",
-                    data: values,
-                    preserveScroll: true,
-                    onSuccess: () => {
-                        setOpen(false);
-                        resolve();
-                    },
-                    onError: () => reject(),
-                });
-            });
-        }
+    const handleUpdate = (id: number | string) => {
+        router.get(
+            route("group_user.show", id),
+            {},
+            { preserveScroll: true, preserveState: true }
+        );
     };
 
     const columns: Column<UserGroupRow>[] = [
@@ -93,7 +75,7 @@ export default function UserGroupIndex() {
         {
             label: "Modifier",
             privilege: "group_user.edit",
-            onClick: (row) => router.get(route("group_user.edit", row.id)),
+            onClick: (row) => handleUpdate(row.id),
         },
         {
             label: "Supprimer",
@@ -119,6 +101,15 @@ export default function UserGroupIndex() {
                 actions={actions}
                 filters={filters}
                 endpoint={route("group_user.index")}
+            />
+
+            <UserGroupForm
+                open={open}
+                onOpenChange={setOpen}
+                mode={mode}
+                initialValues={initialValues}
+                privilegesDef={privilege}
+                groupId={initialValues.id ?? undefined}
             />
         </AuthenticatedLayout>
     );

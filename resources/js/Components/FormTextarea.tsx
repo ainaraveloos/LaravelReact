@@ -1,6 +1,4 @@
-import { Label } from "@/Components/ui/label";
-import { Textarea } from "@/Components/ui/textarea";
-import { cn } from "@/lib/utils";
+import { Input } from "antd";
 import type { TextareaHTMLAttributes } from "react";
 
 type FormTextareaProps = {
@@ -25,17 +23,19 @@ export function FormTextarea({
 }: FormTextareaProps) {
     return (
         <div className="space-y-1">
-            {label && <Label htmlFor={name}>{label}</Label>}
+            {label && (
+                <label htmlFor={name} className="text-sm font-medium">
+                    {label}
+                </label>
+            )}
 
-            <Textarea
+            <Input.TextArea
                 id={name}
                 value={value}
                 onChange={(e) => onChange(name, e.target.value)}
-                className={cn(
-                    error && "border-red-500 focus-visible:ring-red-500",
-                    className
-                )}
-                {...props}
+                status={error ? "error" : ""}
+                className={className}
+                {...(props as any)}
             />
 
             {error && <p className="text-sm text-red-500">{error}</p>}

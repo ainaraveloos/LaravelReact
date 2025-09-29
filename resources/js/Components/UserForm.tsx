@@ -104,7 +104,6 @@ export default function UserForm({
             mode={mode}
             title={isCreate ? "Créer un utilisateur" : "Modifier l'utilisateur"}
             initialValues={data}
-            size="sm"
             onSubmit={handleSubmit}
             render={() => (
                 <div className="space-y-4">

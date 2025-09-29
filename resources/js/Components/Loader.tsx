@@ -1,35 +1,34 @@
 import { useEffect, useState } from "react";
 
 export default function Loader() {
-    const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-    useEffect(() => {
-        const startLoading = () => setLoading(true);
-        const stopLoading = () => setTimeout(() => setLoading(false), 500);
+  useEffect(() => {
 
-        const clickHandler = (e: any) => {
-            const target = e.target as HTMLElement;
-            if (
-                target?.closest(
-                    'a[href]:not([download]):not([target="_blank"])'
-                ) ||
-                target?.closest('button[type="submit"]')
-            ) {
-                startLoading();
-            }
-        };
+    const startLoading = () => setLoading(true);
+    const stopLoading = () => setTimeout(() => setLoading(false), 500);
 
-        document.addEventListener("inertia:start", startLoading);
-        document.addEventListener("inertia:finish", stopLoading);
-        document.addEventListener("click", clickHandler);
-        return () => {
-            document.removeEventListener("inertia:start", startLoading);
-            document.removeEventListener("inertia:finish", stopLoading);
-            document.removeEventListener("click", clickHandler);
-        };
-    }, []);
+    const clickHandler = (e: any) => {
+      const target = e.target as HTMLElement;
+      if (
+        target?.closest('a[href]:not([download]):not([target="_blank"])') ||
+        target?.closest('button[type="submit"]')
+      ) {
+        startLoading();
+      }
+    };
 
-    if (!loading) return null;
+    document.addEventListener("inertia:start", startLoading);
+    document.addEventListener("inertia:finish", stopLoading);
+    document.addEventListener("click", clickHandler);
+    return () => {
+      document.removeEventListener("inertia:start", startLoading);
+      document.removeEventListener("inertia:finish", stopLoading);
+      document.removeEventListener("click", clickHandler);
+    };
+  }, []);
+
+  if (!loading) return null;
 
     return (
         <div className="fixed inset-0 flex items-center justify-center z-[9999] bg-white/90 backdrop-blur-md transition-all duration-300">

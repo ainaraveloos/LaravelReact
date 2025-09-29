@@ -16,9 +16,13 @@ Route::get('/', function () {
     ]);
 });
 
-Route::get('/dashboard', function () {
+Route::get('/menu', function () {
     return Inertia::render('Menu/Index');
-})->middleware(['auth', 'verified'])->name('dashboard');
+})->middleware(['auth', 'verified'])->name('menu');
+
+Route::get('/test-image-upload', function () {
+    return Inertia::render('TestImageUpload');
+})->name('test.image.upload');
 
 Route::middleware('auth')->group(function () {
     Route::resource("user", UserController::class);

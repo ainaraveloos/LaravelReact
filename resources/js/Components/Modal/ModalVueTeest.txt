@@ -1,0 +1,128 @@
+<script setup>
+import { ref } from "vue";
+
+const props = defineProps({
+    loading: {
+        type: Boolean,
+        default: false,
+    },
+    okText: {
+        type: String,
+        default: () => "Enrégistrer",
+    },
+    show: {
+        type: Boolean,
+        default: () => true,
+    },
+    show_champ_obligatoir: {
+        type: Boolean,
+        require: false,
+        default: () => true,
+    },
+    size: {
+        type: String,
+        default: "md",
+        validator: (value) => ["sm", "md", "lg", "full_screen"].includes(value),
+    },
+    titre: {
+        type: String,
+        required: true,
+    },
+    showFooter: {
+        type: Boolean,
+        default: true,
+        required: false,
+    },
+});
+
+const open = defineModel("open");
+const emits = defineEmits(["close", "submit"]);
+
+const modalWidths = {
+    sm: "600px",
+    md: "800px",
+    lg: "1000px",
+    full_screen: "100%",
+};
+</script>
+
+<template>
+    <a-modal
+        v-model:open="open"
+        @close="emits('close')"
+        class="main-modal rounded-none"
+        :wrap-class-name="{ 'full-modal': size === 'full_screen' }"
+        @cancel="emits('close')"
+        @ok="emits('submit')"
+        :ok-text="okText"
+        cancel-text="Fermer"
+        :confirm-loading="loading"
+        :mask-closable="false"
+        :closable="!loading"
+        :cancel-button-props="{ disabled: loading }"
+        :width="modalWidths[size]"
+        :footer="showFooter ? undefined : null"
+    >
+        <template #title>
+            <div class="modal-header bg-primary text-white">
+                <slot name="title">
+                    {{ titre }}
+                </slot>
+            </div>
+        </template>
+        <a-alert
+            type="warning"
+            class="border-none my-7 py-3"
+            v-if="show_champ_obligatoir"
+        >
+            <template #message>
+                Les champs marqués par <b class="text-red-600">*</b> sont
+                obligatoires.
+            </template>
+        </a-alert>
+
+        <a-form layout="vertical">
+            <slot />
+        </a-form>
+    </a-modal>
+</template>
+
+<style>
+.full-modal .ant-modal {
+    @apply max-w-full top-0 pb-0 m-0 h-screen;
+}
+
+.full-modal .ant-modal-content {
+    @apply flex flex-col h-screen;
+}
+
+.full-modal .ant-modal-body {
+    @apply flex-1 overflow-auto px-6 py-4;
+}
+
+.modal-header {
+    padding: 16px 24px;
+    margin: -20px -24px 0 -24px;
+    border-radius: 8px 8px 0 0;
+}
+
+/* Style pour le bouton de fermeture blanc */
+.ant-modal-close {
+    color: white !important;
+}
+
+.ant-modal-close:hover {
+    color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* Fixer les boutons en bas */
+.ant-modal-footer {
+    position: sticky;
+    bottom: 0;
+    background: white !important;
+    z-index: 1;
+    padding: 16px 24px;
+    border-top: 1px solid #f0f0f0;
+    margin: 0 -24px -16px -24px;
+}
+</style>

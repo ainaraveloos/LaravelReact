@@ -1,7 +1,6 @@
-// Components/FormInput.tsx
-import { Input } from "@/Components/ui/input";
-import { Label } from "@/Components/ui/label";
-import { cn } from "@/lib/utils";
+// Components/FormInput.tsx (Ant Design)
+import { EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
+import { Input } from "antd";
 import type { InputHTMLAttributes } from "react";
 
 type FormInputProps = {
@@ -21,21 +20,38 @@ export function FormInput({
     className,
     ...props
 }: FormInputProps) {
+    const isPassword = props.type === "password";
     return (
         <div className="space-y-1">
-            {label && <Label htmlFor={name}>{label}</Label>}
-            <Input
-                id={name}
-                value={value}
-                onChange={(e) => onChange(name, e.target.value)}
-                className={cn(
-                    error && "border-red-500 focus-visible:ring-red-500",
-                    className
-                )}
-                {...props}
-            />
-
-            {error && <p className="text-sm text-red-500">{error}</p>}
+            {label && (
+                <label htmlFor={name} className="text-sm font-medium">
+                    {label}
+                </label>
+            )}
+            {isPassword ? (
+                <Input.Password
+                    id={name}
+                    size="large"
+                    value={value}
+                    status={error ? "error" : undefined}
+                    onChange={(e) => onChange(name, e.target.value)}
+                    className={`w-full ${className ?? ""}`}
+                    iconRender={(visible) =>
+                        visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
+                    }
+                    {...(props as any)}
+                />
+            ) : (
+                <Input
+                    id={name}
+                    value={value}
+                    status={error ? "error" : undefined}
+                    onChange={(e) => onChange(name, e.target.value)}
+                    className={`w-full ${className ?? ""}`}
+                    {...props}
+                />
+            )}
+            {error && <p className="text-xs text-red-500">{error}</p>}
         </div>
     );
 }

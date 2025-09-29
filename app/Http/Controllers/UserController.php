@@ -62,7 +62,12 @@ class UserController extends Controller
     }
     public function show(User $user)
     {
-        return back()->with(['flash' => $user]);
+        return back()->with([
+            'flash' =>
+                [
+                    'user' => $user
+                ]
+        ]);
     }
 
     public function update(Request $request, User $user)
@@ -75,7 +80,9 @@ class UserController extends Controller
         ]);
         if ($request->filled('password')) {
             $data['password'] = Hash::make($data['password']);
-        } else { unset($data['password']);}
+        } else {
+            unset($data['password']);
+        }
 
         $user->update($data);
 
