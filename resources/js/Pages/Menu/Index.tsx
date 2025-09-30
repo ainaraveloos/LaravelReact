@@ -2,6 +2,7 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { getMenuData } from "@/Utils/MenuData";
 import { filterMenuByPrivileges } from "@/Utils/MenuFilter";
 import usePermissions from "@/hooks/usePermissions";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Head, router, usePage } from "@inertiajs/react";
 
 export default function MenuIndex() {
@@ -39,11 +40,6 @@ export default function MenuIndex() {
             { module: module.key },
             { preserveState: true }
         );
-    };
-
-    const goToRoute = (routeName?: string) => {
-        if (!routeName) return;
-        router.get(route(routeName));
     };
 
     return (
@@ -94,8 +90,9 @@ export default function MenuIndex() {
                                                         borderColor: `${primaryColor}33`,
                                                     }}
                                                 >
-                                                    <i
-                                                        className={`${module.icon} text-xl`}
+                                                    <FontAwesomeIcon
+                                                        icon={`${module.icon}`}
+                                                        className="text-3xl"
                                                         aria-hidden="true"
                                                     />
                                                 </div>
@@ -103,9 +100,6 @@ export default function MenuIndex() {
                                                     <h3 className="text-slate-900 text-lg lg:text-xl font-semibold tracking-tight">
                                                         {module.label}
                                                     </h3>
-                                                    <p className="text-slate-500 text-xs uppercase tracking-wider">
-                                                        Accès rapide
-                                                    </p>
                                                 </div>
                                             </div>
                                             <div className="mt-1 text-slate-400 transition-transform duration-200 group-hover:translate-x-1 group-hover:text-slate-600">
@@ -122,13 +116,6 @@ export default function MenuIndex() {
                                                     />
                                                 </svg>
                                             </div>
-                                        </div>
-
-                                        <div className="mt-6 flex items-center justify-between">
-                                            <div className="h-px w-24 bg-slate-200" />
-                                            <span className="text-[11px] text-slate-500">
-                                                Entrée
-                                            </span>
                                         </div>
                                     </div>
                                 </div>

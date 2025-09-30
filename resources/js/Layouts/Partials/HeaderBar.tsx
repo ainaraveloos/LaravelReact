@@ -1,4 +1,3 @@
-import { faEllipsis, faHouse } from "@/lib/icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "@inertiajs/react";
 import { Button, Dropdown } from "antd";
@@ -51,10 +50,7 @@ export default function HeaderBar({ items = [] as HeaderItem[] }) {
                 <Link as="button" href={route("menu")}
                     className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 lg:px-4 py-1.5 sm:py-2 rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors flex-shrink-0"
                 >
-                    <FontAwesomeIcon
-                        icon={faHouse}
-                        className="h-3 w-3 sm:h-4 sm:w-4"
-                    />
+                    <FontAwesomeIcon icon="house" className="h-3 w-3 sm:h-4 sm:w-4"/>
 
                 </Link>
                 <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
@@ -64,18 +60,13 @@ export default function HeaderBar({ items = [] as HeaderItem[] }) {
                         return (
                             <Link as="button" key={item.key} href={href}
                                 className={
-                                    "relative inline-flex items-center rounded-lg px-2.5 sm:px-3.5 lg:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium transition-colors flex-shrink-0 whitespace-nowrap border " +
+                                    "relative inline-flex items-center rounded-lg px-4 py-2 text-xs sm:text-sm font-medium transition-colors flex-shrink-0 whitespace-nowrap border " +
                                     (isActive
                                         ? "bg-slate-50 text-slate-800 border-slate-300"
                                         : "bg-white text-slate-700 hover:bg-slate-50 hover:text-slate-900 border-slate-200")
                                 }
                             >
-                                <span className="relative">
-                                    {item.label}
-                                    {isActive && (
-                                        <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 h-1 w-full rounded-full bg-slate-300"></span>
-                                    )}
-                                </span>
+                                <span className="relative">{item.label}</span>
                             </Link>
                         );
                     })}
@@ -95,8 +86,7 @@ export default function HeaderBar({ items = [] as HeaderItem[] }) {
                             <Button type="default" size="middle"
                                 className="inline-flex items-center bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 flex-shrink-0"
                             >
-                                <FontAwesomeIcon icon={faEllipsis} className="h-3 w-3 sm:h-4 sm:w-4"
-                                />
+                                <FontAwesomeIcon icon="ellipsis" className="h-3 w-3 sm:h-4 sm:w-4"/>
                             </Button>
                         </Dropdown>
                     )}

@@ -9,7 +9,7 @@ class UserService extends BaseService
 {
     protected $repository;
     protected array $relation = ['group'];
-    protected array $scope = ['filter' => 'search', 'isdna' => 'isdna'];
+    protected array $scope = ['filter' => 'search', 'usergroup'=>'user_group_id'];
 
     public function __construct(UserRepository $userRepository)
     {
