@@ -169,3 +169,28 @@
 .custom-table .ant-table-tbody > tr.ant-table-row-selected a {
     color: var(--dt-selected-color) !important;
 }
+
+/* Colored AntD Table header using theme tokens */
+.custom-table .ant-table-thead > tr > th {
+    background: var(--ant-color-primary) !important;
+    color: var(--ant-color-text-light-solid) !important;
+}
+
+/* Remove top border radius on table header and container */
+.custom-table .ant-table,
+.custom-table .ant-table-container,
+.custom-table .ant-table-header,
+.custom-table .ant-table-sticky-holder,
+.custom-table .ant-table-thead > tr > th:first-child,
+.custom-table .ant-table-thead > tr > th:last-child {
+    border-top-left-radius: 0 !important;
+    border-top-right-radius: 0 !important;
+}
+
+/* Also remove the parent wrapper's top radius when it contains a custom-table */
+.rounded-lg:has(.custom-table),
+.rounded-md:has(.custom-table),
+.rounded-xl:has(.custom-table) {
+    border-top-left-radius: 0 !important;
+    border-top-right-radius: 0 !important;
+}

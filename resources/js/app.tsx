@@ -26,7 +26,7 @@ createInertiaApp({
                     cssVar: true,
                     token: {
                         colorPrimary: defaultTheme.colors.primary,
-                        colorSuccess:defaultTheme.colors.secondary,
+                        colorSecondary: defaultTheme.colors.secondary,
                         colorText: defaultTheme.colors.foreground,
                         colorBgBase: defaultTheme.colors.background,
                         borderRadius: 8,

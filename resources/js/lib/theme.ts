@@ -13,7 +13,7 @@ export type AppTheme = {
 
 export const defaultTheme: AppTheme = {
     colors: {
-        primary: "#253141", // gray-800
+        primary: "#202B3A", // gray-800
         secondary: "#D7670C", // gray-600
         accent: "#3b82f6", // blue-500
         muted: "#6b7280", // gray-500

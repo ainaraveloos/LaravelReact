@@ -60,15 +60,13 @@ export default function HeaderBar({ items = [] as HeaderItem[] }) {
                         return (
                             <Link as="button" key={item.key} href={href}
                                 className={
-                                    "relative inline-flex items-center rounded-lg px-2.5 sm:px-3.5 lg:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium transition-colors flex-shrink-0 whitespace-nowrap border " +
+                                    "relative inline-flex items-center rounded-lg px-4 py-2 text-xs sm:text-sm font-medium transition-colors flex-shrink-0 whitespace-nowrap border " +
                                     (isActive
                                         ? "bg-slate-50 text-slate-800 border-slate-300"
                                         : "bg-white text-slate-700 hover:bg-slate-50 hover:text-slate-900 border-slate-200")
                                 }
                             >
-                                <span className="relative">
-                                    {item.label}
-                                </span>
+                                <span className="relative">{item.label}</span>
                             </Link>
                         );
                     })}
