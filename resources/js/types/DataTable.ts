@@ -2,6 +2,8 @@ export type Column<T> = {
     key: keyof T | "index";
     label: string;
     render?: (row: T, index: number) => React.ReactNode;
+    align?: "left" | "center" | "right";
+    width?: number;
 };
 
 export type Action<T> = {
@@ -34,4 +36,6 @@ export interface DataTableProps<T> {
     selectableRows?: boolean;
     selectedIds?: Array<string | number>;
     onSelectionChange?: (ids: Array<string | number>) => void;
+    align?: "left" | "center" | "right";
+    width?: number;
 }

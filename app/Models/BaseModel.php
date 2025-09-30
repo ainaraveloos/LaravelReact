@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Http\Request;
 
-class Basemodel extends Model
+class BaseModel extends Model
 {
     use SoftDeletes;
     protected $guarded = ["id", "create_at", "update_at", "delete_at"];

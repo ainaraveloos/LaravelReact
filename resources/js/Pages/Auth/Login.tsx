@@ -38,11 +38,21 @@ export default function Login({
 
             <form onSubmit={submit}>
                 <div className="space-y-4">
-                    <FormInput name="email" type="email" label="Email" value={data.email} error={errors.email}
+                    <FormInput
+                        name="email"
+                        type="email"
+                        label="Email"
+                        value={data.email}
+                        error={errors.email}
                         onChange={(name, value) => setData(name as any, value)}
                     />
 
-                    <FormInput name="password" type="password" label="Password" value={data.password} error={errors.password}
+                    <FormInput
+                        name="password"
+                        type="password"
+                        label="Password"
+                        value={data.password}
+                        error={errors.password}
                         onChange={(name, value) => setData(name as any, value)}
                     />
                 </div>
@@ -75,7 +85,13 @@ export default function Login({
                         </Link>
                     )}
 
-                    <Button size="large" type="primary" htmlType="submit" loading={processing} className="ms-4">
+                    <Button
+                        size="large"
+                        type="primary"
+                        htmlType="submit"
+                        loading={processing}
+                        className="ms-4"
+                    >
                         Connexion
                     </Button>
                 </div>

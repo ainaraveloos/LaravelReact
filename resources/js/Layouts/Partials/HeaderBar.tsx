@@ -68,9 +68,6 @@ export default function HeaderBar({ items = [] as HeaderItem[] }) {
                             >
                                 <span className="relative">
                                     {item.label}
-                                    {isActive && (
-                                        <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 h-1 w-full rounded-full bg-slate-300"></span>
-                                    )}
                                 </span>
                             </Link>
                         );

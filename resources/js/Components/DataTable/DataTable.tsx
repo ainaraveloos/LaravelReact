@@ -44,23 +44,25 @@ export function DataTable<T extends { id: number | string }>({
     // Build antd columns
     const antdColumns: ColumnsType<T & { _index?: number }> = [
         ...columns.map((col) => {
+            const colAlign = (col as any).align ?? "left";
+            const colWidth = (col as any).width ?? 60;
             if (col.key === "index") {
                 return {
                     title: col.label,
                     dataIndex: "_index",
                     key: "_index",
-                    width: 60,
-                    render: (_: any, __: any, idx: number) =>
-                        startIndex + idx + 1,
+                    width: colWidth,
+                    align: colAlign,
+                    render: (_: any, __: any, idx: number) => startIndex + idx + 1,
                 } as any;
             }
             return {
                 title: col.label,
                 dataIndex: col.key as string,
                 key: String(col.key),
+                align: colAlign,
                 render: (_: any, record: T, idx: number) =>
-                    col.render
-                        ? col.render(record, idx)
+                    col.render ? col.render(record, idx)
                         : String((record as any)[col.key as string] ?? ""),
             } as any;
         }),
@@ -71,6 +73,7 @@ export function DataTable<T extends { id: number | string }>({
                       key: "actions",
                       fixed: "right" as const,
                       width: 96,
+                      align: "center",
                       render: (_: any, record: T) => {
                           const visibleActions = actions.filter((a) =>
                               isActionVisible(a, record)

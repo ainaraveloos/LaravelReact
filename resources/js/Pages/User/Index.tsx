@@ -1,14 +1,13 @@
 import { DataTable } from "@/Components/DataTable/DataTable";
 import FilterBase from "@/Components/Filter/FilterBase";
 import { FormDefaultSelect } from "@/Components/FormDefaultSelect";
-import { Button } from "antd";
-import { UserPayload } from "./Form/UserForm";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import type { PageProps } from "@/types";
 import type { Action, Column } from "@/types/DataTable";
 import { Head, router, usePage } from "@inertiajs/react";
+import { Button } from "antd";
 import { useEffect, useState } from "react";
-import UserForm from "./Form/UserForm";
+import UserForm, { UserPayload } from "./Form/UserForm";
 import type { UserRow } from "./Types/Index";
 
 type PageData = {
@@ -100,8 +99,8 @@ export default function UserIndex() {
 
     const columns: Column<UserRow>[] = [
         // { key: "index", label: "#" },
-        { key: "name", label: "Nom" },
-        { key: "email", label: "Email" },
+        { key: "name", label: "Nom"},
+        { key: "email", label: "Email"},
         { key: "user_group_name", label: "Groupe" },
     ];
 

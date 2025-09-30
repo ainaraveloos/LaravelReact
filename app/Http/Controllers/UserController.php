@@ -40,13 +40,13 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
-
         $data = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|lowercase|email|max:255|unique:users,email',
             'tel' => 'nullable|string|max:255',
             'password' => ['nullable', 'confirmed', Rules\Password::defaults()],
             'user_group_id' => 'required|exists:user_groups,id',
+            'img' => 'nullable|image|mimes:jpeg,png,jpg,webp,avif|max:5120',
         ]);
 
         if (!array_key_exists('password', $data) || empty($data['password'])) {
@@ -55,6 +55,11 @@ class UserController extends Controller
             $data['password'] = Hash::make($data['password']); // Hacher le mot de passe fourni
         }
         $data['email_verified_at'] = date("Y-m-d H:i:s");
+
+        // Inject the uploaded file into payload if present
+        if ($request->hasFile('img')) {
+            $data['img'] = $request->file('img');
+        }
 
         $this->service->create($data);
 
@@ -77,14 +82,19 @@ class UserController extends Controller
             'email' => "required|string|lowercase|email|max:255|unique:users,email,{$user->id}",
             'password' => ['nullable', 'confirmed', Rules\Password::defaults()],
             'user_group_id' => 'required|exists:user_groups,id',
+            'img' => 'nullable|image|mimes:jpeg,png,jpg,webp,avif|max:5120',
         ]);
         if ($request->filled('password')) {
             $data['password'] = Hash::make($data['password']);
         } else {
             unset($data['password']);
         }
+        // Inject the uploaded file into payload if present
+        if ($request->hasFile('img')) {
+            $data['img'] = $request->file('img');
+        }
 
-        $user->update($data);
+        $this->service->update($user, $data);
 
         return back()->with("message.success", "Enrégistrement effectuer");
     }
