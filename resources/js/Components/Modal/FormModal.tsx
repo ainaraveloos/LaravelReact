@@ -74,19 +74,13 @@ export default function FormModal<T extends object>({
                     ? { top: 0, paddingBottom: 0, margin: 0 }
                     : undefined
             }
-            bodyStyle={
-                isFullscreen
-                    ? { height: "calc(100vh - 120px)", overflow: "auto" }
-                    : undefined
-            }
-            wrapClassName={isFullscreen ? "full-modal" : undefined}
+            wrapClassName={`primary-modal ${isFullscreen ? "full-modal" : ""}`}
             maskClosable={!submitting}
-            destroyOnClose
         >
             {description && (
                 <div className="text-sm text-gray-500 mb-3">{description}</div>
             )}
-            <div className="space-y-4">
+            <div className="space-y-4 mt-4">
                 {render({ values, setValues, mode })}
             </div>
         </Modal>

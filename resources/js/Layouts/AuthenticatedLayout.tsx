@@ -3,7 +3,6 @@ import ApplicationLogo from "@/Components/ApplicationLogo";
 import Layout from "@/Layouts/Layout";
 import FooterBar from "@/Layouts/Partials/FooterBar";
 import HeaderBar from "@/Layouts/Partials/HeaderBar";
-import { faRightFromBracket, faUser } from "@/lib/icons";
 import { getMenuData } from "@/Utils/MenuData";
 import { filterMenuByPrivileges } from "@/Utils/MenuFilter";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -21,16 +20,12 @@ export default function Authenticated({
 
     // Build privileges array for filtering
     const privileges: string[] = [
-        ...(Array.isArray((user as any)?.accepted_routes)
-            ? (user as any).accepted_routes
-            : Object.values((user as any)?.accepted_routes || {})),
-        ...(Array.isArray((user as any)?.permissions)
-            ? (user as any).permissions
-            : Object.values((user as any)?.permissions || {})),
+        ...(Array.isArray((user as any)?.accepted_routes) ? (user as any).accepted_routes : Object.values((user as any)?.accepted_routes || {})),
+        ...(Array.isArray((user as any)?.permissions) ? (user as any).permissions : Object.values((user as any)?.permissions || {})),
     ].map(String);
 
     const allMenu = getMenuData();
-    const filteredMenu = filterMenuByPrivileges( allMenu, privileges, Boolean((user as any)?.is_dna));
+    const filteredMenu = filterMenuByPrivileges( allMenu, privileges, Boolean((user as any)?.is_dna) );
     let currentSection = filteredMenu.find( (m: any) => m.key === selectedModule );
     if (!currentSection) {
         currentSection = filteredMenu.find((m: any) =>
@@ -41,7 +36,8 @@ export default function Authenticated({
     return (
         <Layout>
             <div className="min-h-screen bg-gray-100 flex flex-col">
-                <header className="fixed z-50 w-full bg-stone-50/95 backdrop-blur supports-[backdrop-filter]:bg-stone-50/90 border-b border-stone-300">
+                {/* Header */}
+                <header id="app-header" className="fixed z-50 w-full bg-stone-50/95 backdrop-blur supports-[backdrop-filter]:bg-stone-50/90 border-b border-stone-300">
                     <div className="w-full px-4 py-2.5 sm:px-6 lg:px-8 flex items-center justify-between">
                         <Link href="/" className="flex items-center gap-2">
                             <ApplicationLogo className="block h-6 w-auto fill-current text-stone-800" />
@@ -50,13 +46,7 @@ export default function Authenticated({
                         {currentSection && (
                             <div className="flex-1 max-w-4xl mx-4 sm:mx-8">
                                 <div className="rounded-xl p-1.5 border border-stone-300 bg-gray-200 shadow-inner">
-                                    <HeaderBar
-                                        items={( currentSection.children || [] ).map((c: any) => ({
-                                            key: c.key,
-                                            label: c.label,
-                                            routeName: c.routeName,
-                                        }))}
-                                    />
+                                    <HeaderBar items={( currentSection.children || [] ).map((c: any) => ({ key: c.key, label: c.label, routeName: c.routeName}))}/>
                                 </div>
                             </div>
                         )}
@@ -70,10 +60,13 @@ export default function Authenticated({
                                             label: (
                                                 <div className="px-3 py-2 border-b border-stone-200 bg-stone-50">
                                                     <div className="text-sm font-medium text-stone-800">
-                                                        {user.name || "Utilisateur"}
+                                                        {" "}
+                                                        {user.name ||
+                                                            "Utilisateur"}{" "}
                                                     </div>
                                                     <div className="text-xs text-stone-600">
-                                                        {user.email}
+                                                        {" "}
+                                                        {user.email}{" "}
                                                     </div>
                                                 </div>
                                             ),
@@ -88,7 +81,7 @@ export default function Authenticated({
                                                 >
                                                     <span className="inline-flex items-center gap-2">
                                                         <FontAwesomeIcon
-                                                            icon={faUser}
+                                                            icon="user"
                                                             className="h-3.5 w-3.5"
                                                         />
                                                         <span>Profile</span>
@@ -100,19 +93,11 @@ export default function Authenticated({
                                         {
                                             key: "logout",
                                             label: (
-                                                <Link
-                                                    href={route("logout")}
-                                                    method="post"
-                                                    as="button"
+                                                <Link href={route("logout")} method="post" as="button"
                                                     className="block px-3 py-2 text-red-500 hover:bg-red-50 hover:text-red-600 transition-colors"
                                                 >
                                                     <span className="inline-flex items-center gap-2">
-                                                        <FontAwesomeIcon
-                                                            icon={
-                                                                faRightFromBracket
-                                                            }
-                                                            className="h-3.5 w-3.5"
-                                                        />
+                                                        <FontAwesomeIcon icon="right-from-bracket" className="h-3.5 w-3.5" />
                                                         <span>Logout</span>
                                                     </span>
                                                 </Link>
@@ -123,10 +108,10 @@ export default function Authenticated({
                             >
                                 <button className="flex items-center gap-2 px-3 py-2 rounded-lg border border-stone-200 bg-white hover:bg-stone-50 hover:border-stone-300 transition-colors">
                                     <Avatar size={28} className="bg-stone-200 text-stone-700" >
-                                        {(user?.name || user?.email || "U") .slice(0, 1) .toUpperCase()}
+                                        {(user?.name || user?.email || "U").slice(0, 1).toUpperCase()}
                                     </Avatar>
                                     <span className="hidden sm:inline text-stone-700 text-sm font-medium">
-                                        { ( user?.name || user?.email || "User" ).split(" ")[0] }
+                                        {(user?.name ||user?.email ||"User").split(" ")[0]}
                                     </span>
                                 </button>
                             </Dropdown>
@@ -135,14 +120,11 @@ export default function Authenticated({
                 </header>
 
                 {/* Contenu de la page */}
-                <main className="p-4 sm:px-6 lg:px-8 flex-1 mt-20">
-                    {children}
-                </main>
+                <main className="p-4 sm:px-6 lg:px-8 flex-1 mt-20">{children}</main>
 
-                <footer className="border-t bg-white">
-                    <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
-                        <FooterBar />
-                    </div>
+                {/* Footer */}
+                <footer id="app-footer" className="border-t bg-white">
+                    <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8"><FooterBar /></div>
                 </footer>
             </div>
         </Layout>

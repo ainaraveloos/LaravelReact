@@ -45,6 +45,7 @@ export function FormInput({
                 <Input
                     id={name}
                     value={value}
+                    size="large"
                     status={error ? "error" : undefined}
                     onChange={(e) => onChange(name, e.target.value)}
                     className={`w-full ${className ?? ""}`}

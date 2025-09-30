@@ -72,6 +72,13 @@ class User extends Authenticatable
         }
         return $query;
     }
+    public function scopeUserGroup($query, $user_group_id=null)
+    {
+        if ($user_group_id) {
+            $query->where('user_group_id', $user_group_id);
+        }
+        return $query;
+    }
 
 
     public function group()

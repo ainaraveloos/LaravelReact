@@ -37,6 +37,9 @@
         --sidebar-accent-foreground: 240 5.9% 10%;
         --sidebar-border: 220 13% 91%;
         --sidebar-ring: 217.2 91.2% 59.8%;
+        /* DataTable custom selection palette (non-primary) */
+        --dt-selected-bg: #f6f8fb; /* soft neutral/blue-gray */
+        --dt-selected-color: #1f2937; /* gray-800 for text */
     }
     .dark {
         --background: 0 0% 3.9%;
@@ -116,4 +119,53 @@
     padding: 16px 24px;
     border-top: 1px solid #f0f0f0;
     margin: 0 -24px -16px -24px;
+}
+
+/* Primary header without side gaps (using negative margins to cancel content padding) */
+.primary-modal .ant-modal-header {
+    margin: -24px -24px 0 -24px; /* cancel modal content padding on top and sides */
+    padding: 16px 24px; /* internal spacing for header */
+    background: var(--ant-color-primary) !important;
+    border-bottom: none;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+}
+.primary-modal .ant-modal-header .ant-modal-title {
+    color: var(--ant-color-text-light-solid) !important;
+    margin: 0; /* ensure no extra gap inside title */
+}
+.primary-modal .ant-modal-close {
+    color: var(--ant-color-text-light-solid) !important;
+}
+.primary-modal .ant-modal-close:hover {
+    color: rgba(255, 255, 255, 0.85) !important;
+}
+
+/* Remove subtle button shadows from Ant Design buttons */
+.ant-btn,
+.ant-btn:hover,
+.ant-btn:focus,
+.ant-btn:active,
+.ant-btn:focus-visible,
+.ant-btn-primary,
+.ant-btn-primary:hover,
+.ant-btn-primary:focus,
+.ant-btn-primary:active,
+.ant-btn-primary:focus-visible {
+    box-shadow: none !important;
+    text-shadow: none !important;
+}
+
+/* AntD Table: selected row colors (use AntD CSS variables) */
+.custom-table .ant-table-tbody > tr.ant-table-row-selected > td {
+    background: var(--dt-selected-bg) !important;
+    color: var(--dt-selected-color) !important;
+}
+.custom-table .ant-table-tbody > tr.ant-table-row-selected:hover > td {
+    background: var(--dt-selected-bg) !important;
+}
+.custom-table .ant-table-tbody > tr.ant-table-row-selected .ant-typography,
+.custom-table .ant-table-tbody > tr.ant-table-row-selected .ant-btn-link,
+.custom-table .ant-table-tbody > tr.ant-table-row-selected a {
+    color: var(--dt-selected-color) !important;
 }

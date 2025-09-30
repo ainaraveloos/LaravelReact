@@ -34,9 +34,9 @@ export function FormDefaultSelect({
     };
 
     return (
-        <div className="space-y-1">
+        <div className="space-y-2">
             {label && (
-                <label htmlFor={name} className="text-sm font-medium">
+                <label htmlFor={name} className="text-sm font-medium text-gray-800">
                     {label}
                 </label>
             )}

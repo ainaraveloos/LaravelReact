@@ -1,9 +1,9 @@
 import usePermissions from "@/hooks/usePermissions";
 import type { Action, DataTableProps } from "@/types/DataTable";
+import { MoreOutlined } from "@ant-design/icons";
 import { router } from "@inertiajs/react";
 import { Button, Dropdown, Menu, Table } from "antd";
 import type { ColumnsType } from "antd/es/table";
-import { MoreOutlined } from "@ant-design/icons";
 
 export function DataTable<T extends { id: number | string }>({
     data,
@@ -19,7 +19,11 @@ export function DataTable<T extends { id: number | string }>({
     const startIndex = (data.current_page - 1) * data.per_page;
 
     const handlePageChange = (pageNum: number) => {
-        router.get( endpoint, { page: pageNum, ...filters },{ preserveState: true, preserveScroll: true });
+        router.get(
+            endpoint,
+            { page: pageNum, ...filters },
+            { preserveState: true, preserveScroll: true }
+        );
     };
 
     const isActionVisible = (action: Action<T>, row: T) => {
@@ -46,52 +50,71 @@ export function DataTable<T extends { id: number | string }>({
                     dataIndex: "_index",
                     key: "_index",
                     width: 60,
-                    render: (_: any, __: any, idx: number) => startIndex + idx + 1,
+                    render: (_: any, __: any, idx: number) =>
+                        startIndex + idx + 1,
                 } as any;
             }
             return {
                 title: col.label,
                 dataIndex: col.key as string,
                 key: String(col.key),
-                render: (_: any, record: T, idx: number) => col.render ? col.render(record, idx) : String((record as any)[col.key as string] ?? ""),
+                render: (_: any, record: T, idx: number) =>
+                    col.render
+                        ? col.render(record, idx)
+                        : String((record as any)[col.key as string] ?? ""),
             } as any;
         }),
         ...(actions.length > 0
             ? [
-                {
-                    title: "Actions",
-                    key: "actions",
-                    fixed: "right" as const,
-                    width: 96,
-                    render: (_: any, record: T) => {
-                        const visibleActions = actions.filter((a) => isActionVisible(a, record));
-                        if (visibleActions.length === 0) return null;
-                        const menu = (
-                        <Menu items={visibleActions.map((a, i) => ({
-                                key: i,
-                                disabled: isActionDisabled(a, record),
-                                label: (
-                                        <span onClick={() => a.onClick(record)}>
-                                            {" "}{a.label}
-                                        </span>
-                                ),
-                        }))}/>
-                        );
-                        return (
-                            <Dropdown overlay={menu}  trigger={["click"]}>
-                                <Button size="small" icon={<MoreOutlined />} className="flex items-center justify-center" />
-                            </Dropdown>
-                        );
-                    },
-                },
-            ]
+                  {
+                      title: "Actions",
+                      key: "actions",
+                      fixed: "right" as const,
+                      width: 96,
+                      render: (_: any, record: T) => {
+                          const visibleActions = actions.filter((a) =>
+                              isActionVisible(a, record)
+                          );
+                          if (visibleActions.length === 0) return null;
+                          const menu = (
+                              <Menu
+                                  items={visibleActions.map((a, i) => ({
+                                      key: i,
+                                      disabled: isActionDisabled(a, record),
+                                      label: (
+                                          <span
+                                              onClick={() => a.onClick(record)}
+                                          >
+                                              {" "}
+                                              {a.label}
+                                          </span>
+                                      ),
+                                  }))}
+                              />
+                          );
+                          return (
+                              <Dropdown overlay={menu} trigger={["click"]}>
+                                  <Button
+                                      size="small"
+                                      icon={<MoreOutlined />}
+                                      className="flex items-center justify-center"
+                                  />
+                              </Dropdown>
+                          );
+                      },
+                  },
+              ]
             : []),
     ];
 
     const rowSelection = selectableRows
-        ? { selectedRowKeys: selectedIds as (string | number)[], onChange: (keys: any[]) => onSelectionChange &&
-            onSelectionChange(keys as (string | number)[]),
-        }: undefined;
+        ? {
+              selectedRowKeys: selectedIds as (string | number)[],
+              onChange: (keys: any[]) =>
+                  onSelectionChange &&
+                  onSelectionChange(keys as (string | number)[]),
+          }
+        : undefined;
 
     return (
         <div className="space-y-6">

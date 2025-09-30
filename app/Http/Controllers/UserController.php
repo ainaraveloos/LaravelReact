@@ -6,7 +6,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Services\UserGroupService;
 use App\Services\UserService;
-use App\Utils\ExtractFiltre;
+use App\Utils\ExtractFiltreUser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
@@ -27,7 +27,7 @@ class UserController extends Controller
 
     public function index(Request $request)
     {
-        $filtre = ExtractFiltre::extractFilter($request);
+        $filtre = ExtractFiltreUser::extractFilter($request);
         $output = $this->service->fetchUsuer($filtre);
         $user_groupes = $this->usergroupService->getAll();
         return Inertia::render("User/Index", [

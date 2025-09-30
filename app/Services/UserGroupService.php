@@ -8,6 +8,7 @@ use App\Services\BaseService;
 class UserGroupService extends BaseService
 {
     protected $repository;
+    protected array $scope = ['filter' => 'search'];
 
     public function __construct(UserGroupRepository $userGroupRepository)
     {

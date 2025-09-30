@@ -1,5 +1,26 @@
 export function getMenuData() {
     return [
+        getItem(
+            "Dashboard",
+            "dashboard",
+            "fa-solid fa-house",
+            null,
+            ["#eab308", "#ca8a04"],
+            [
+                getItem(
+                    "dashboard1",
+                    "dashboard1.index",
+                    "fa-solid fa-calendar",
+                    "calendrier.index"
+                ),
+                getItem(
+                    "dashboard2",
+                    "dashboard2.index",
+                    "fa-solid fa-calendar",
+                    "dashboard2.index"
+                ),
+            ]
+        ),
 
         getItem(
             "Paramètres",

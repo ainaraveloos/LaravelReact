@@ -5,10 +5,9 @@ import type { Action, Column } from "@/types/DataTable";
 import { Head, router, usePage } from "@inertiajs/react";
 import { Button } from "antd";
 import { useEffect, useState } from "react";
-import UserGroupForm, {
-    type UserGroupPayload,
-} from "./Formulaire/UserGroupForm";
+import UserGroupForm, { type UserGroupPayload } from "./Formulaire/UserGroupForm";
 import type { UserGroupRow } from "./Types/Index";
+import FilterBase from "@/Components/Filter/FilterBase";
 
 type PageData = {
     data: {
@@ -39,6 +38,17 @@ export default function UserGroupIndex() {
         name: "",
         privileges: [],
     });
+    const [filterState, setFilterState] = useState<{ search?: string }>({
+        search: filters?.search ?? "",
+    });
+    const applyFilter = (filter: { search?: string }) => {
+        setFilterState(filter);
+        router.get(route("group_user.index"), { ...filter }, { preserveScroll: true, preserveState: true });
+    };
+    const resetFilter = () => {
+        setFilterState({ search: "" });
+        router.get(route("group_user.index"), { search: "" }, { preserveScroll: true, preserveState: true });
+    };
     useEffect(() => {
         const f = flash as any;
         if (f && f.usergroup && f.usergroup.id) {
@@ -90,11 +100,17 @@ export default function UserGroupIndex() {
     return (
         <AuthenticatedLayout>
             <Head title="Groupes d'utilisateurs" />
-
-            <div className="flex items-center justify-end mb-4">
-                <Button onClick={handleCreate}>Créer un groupe</Button>
-            </div>
-
+            <FilterBase
+                value={filterState}
+                onChange={setFilterState}
+                onSearch={applyFilter}
+                onReset={resetFilter}
+                renderAdd={() => (
+                    <Button type="primary" size="large" onClick={handleCreate}>
+                        Créer un groupe
+                    </Button>
+                )}
+            />
             <DataTable<UserGroupRow>
                 data={data}
                 columns={columns}

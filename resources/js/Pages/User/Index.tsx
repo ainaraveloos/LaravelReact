@@ -1,5 +1,8 @@
 import { DataTable } from "@/Components/DataTable/DataTable";
-import { Button } from "@/Components/ui/button";
+import FilterBase from "@/Components/Filter/FilterBase";
+import { FormDefaultSelect } from "@/Components/FormDefaultSelect";
+import { Button } from "antd";
+import { UserPayload } from "./Form/UserForm";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import type { PageProps } from "@/types";
 import type { Action, Column } from "@/types/DataTable";
@@ -9,7 +12,13 @@ import UserForm from "./Form/UserForm";
 import type { UserRow } from "./Types/Index";
 
 type PageData = {
-    data: { data: UserRow[]; current_page: number; per_page: number; total: number; last_page: number; };
+    data: {
+        data: UserRow[];
+        current_page: number;
+        per_page: number;
+        total: number;
+        last_page: number;
+    };
     user_groupes: { value: number | string; label: string }[];
     filters: { search?: string };
     flash?: any;
@@ -20,21 +29,47 @@ export default function UserIndex() {
     const [open, setOpen] = useState(false);
     const [mode, setMode] = useState<"create" | "update">("create");
     const [selectedIds, setSelectedIds] = useState<(number | string)[]>([]);
-    const [initialValues, setInitialValues] = useState<{
-        id?: number | string | null;
-        name: string;
-        email: string;
-        user_group_id?: number | string | null;
-    }>({ id: null, name: "", email: "" });
+    const [initialValues, setInitialValues] = useState<UserPayload>({
+        id: null,
+        name: "",
+        email: "",
+    });
 
     const { data, filters, user_groupes, flash } = page.props;
 
+    // Filters state: search + user_group_id
+    const [filterState, setFilterState] = useState<{
+        search?: string;
+        user_group_id?: number | string | null;
+    }>(() => ({
+        search: filters?.search ?? "",
+        user_group_id: (filters as any)?.user_group_id ?? null,
+    }));
+    const applyFilter = (filter: {
+        search?: string;
+        user_group_id?: number | string | null;
+    }) => {
+        setFilterState(filter);
+        router.get(
+            route("user.index"),
+            { ...filter },
+            { preserveScroll: true, preserveState: true }
+        );
+    };
+    const resetFilter = () => {
+        setFilterState({ search: "", user_group_id: null });
+        router.get(
+            route("user.index"),
+            { search: "", user_group_id: null },
+            { preserveScroll: true, preserveState: true }
+        );
+    };
 
     // Open update modal when flash contains a user (coming from controller show())
     useEffect(() => {
         const f = flash as any;
         if (f && f.user && f.user.id) {
-            const u = f.user
+            const u = f.user;
             setMode("update");
             setInitialValues({
                 id: u.id,
@@ -47,11 +82,20 @@ export default function UserIndex() {
     }, [flash]);
     const handleAdd = () => {
         setMode("create");
-        setInitialValues({ id: null, name: "", email: "", user_group_id: undefined});
+        setInitialValues({
+            id: null,
+            name: "",
+            email: "",
+            user_group_id: undefined,
+        });
         setOpen(true);
     };
     const handleUpdate = (id: number | string) => {
-        router.get(route("user.show", id),{},{ preserveScroll: true, preserveState: true });
+        router.get(
+            route("user.show", id),
+            {},
+            { preserveScroll: true, preserveState: true }
+        );
     };
 
     const columns: Column<UserRow>[] = [
@@ -81,12 +125,41 @@ export default function UserIndex() {
     return (
         <AuthenticatedLayout>
             <Head title="Utilisateurs" />
-            <div className="flex items-center justify-between mb-4">
-                {selectedIds.length >0 && (
-                    <Button onClick={() => alert(selectedIds)}>({selectedIds.length})</Button>
+            <FilterBase
+                value={filterState}
+                onChange={setFilterState}
+                onSearch={applyFilter}
+                onReset={() => resetFilter()}
+                renderFilters={({ value, onChange }) => (
+                    <div className="space-y-3">
+                        <FormDefaultSelect
+                            name="user_group_id"
+                            label="Groupe utilisateur"
+                            value={value.user_group_id}
+                            options={user_groupes}
+                            placeholder="Tous les groupes"
+                            filterOption={(input: string, option: any) =>
+                                (option?.label ?? "")
+                                    .toLowerCase()
+                                    .includes(input.toLowerCase())
+                            }
+                            onChange={(_, v) => onChange({ user_group_id: v })}
+                        />
+                    </div>
                 )}
-                <Button onClick={handleAdd}>Ajouter un utilisateur</Button>{" "}
-            </div>
+                renderAdd={() => (
+                    <>
+                        {selectedIds.length > 0 && (
+                            <Button type="default" size="large" onClick={() => alert(selectedIds)}>
+                                Action
+                            </Button>
+                        )}
+                        <Button type="primary" size="large" onClick={handleAdd}>
+                            Nouveau utilisateur
+                        </Button>
+                    </>
+                )}
+            />
             <DataTable
                 data={data}
                 columns={columns}
