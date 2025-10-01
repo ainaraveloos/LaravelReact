@@ -108,7 +108,7 @@ export function DataTable<T extends { id: number | string }>({
                     rowKey={(r) => r.id}
                     pagination={false}
                     sticky
-                    scroll={{ x: 640 }}
+                    scroll={{ x: 650, y: 500 }}
                     rowSelection={rowSelection as any}
                     className="custom-table"
                 />
