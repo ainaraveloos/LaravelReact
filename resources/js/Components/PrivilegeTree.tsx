@@ -1,24 +1,13 @@
-import { Checkbox, Tree } from "antd";
+import { Checkbox, Input, Tree } from "antd";
 import type { DataNode } from "antd/es/tree";
+import { useState } from "react";
 
-export type PrivilegeModule = {
-    key: string;
-    title: string;
-    children?: PrivilegeModule[];
-};
+export type PrivilegeModule = { key: string, title: string, children?: PrivilegeModule[]};
 
-type Props = {
-    privilegesDef: PrivilegeModule[];
-    value: string[];
-    onChange: (routes: string[]) => void;
-};
+type Props = { privilegesDef: PrivilegeModule[], value: string[], onChange: (routes: string[]) => void };
 
-const toTreeData = (items: PrivilegeModule[]): DataNode[] =>
-    items.map(({ key, title, children }) => ({
-        key,
-        title,
-        children: children ? toTreeData(children) : undefined,
-    }));
+const toTreeData = (items: PrivilegeModule[]): DataNode[] => items.map(({ key, title, children }) =>
+({ key, title, children: children ? toTreeData(children) : undefined }));
 
 const collectDescendantKeys = (node?: PrivilegeModule): string[] => {
     if (!node) return [];
@@ -43,11 +32,24 @@ const collectDescendantKeysFromNodes = (
     return Array.from(new Set(keys));
 };
 
-export default function PrivilegeTree({
-    privilegesDef,
-    value,
-    onChange,
-}: Props) {
+const filterPrivileges = (
+    modules: PrivilegeModule[],
+    searchTerm: string
+): PrivilegeModule[] => {
+    if (!searchTerm.trim()) return modules;
+    const term = searchTerm.toLowerCase();
+    const filterNode = (node: PrivilegeModule): PrivilegeModule | null => {
+        const matchesTitle = node.title.toLowerCase().includes(term);
+        if (matchesTitle) { return node}
+        const filteredChildren = node.children ?.map(filterNode).filter((child): child is PrivilegeModule => child !== null);
+        if (filteredChildren && filteredChildren.length > 0) { return { ...node, children: filteredChildren } }
+        return null;
+    };
+    return modules.map(filterNode).filter((module): module is PrivilegeModule => module !== null);
+};
+
+export default function PrivilegeTree({ privilegesDef, value, onChange }: Props) {
+    const [searchTerm, setSearchTerm] = useState("");
     const selection = new Set(value);
 
     const isCheckedAll = (keys: string[]) => keys.length > 0 && keys.every((k) => selection.has(k));
@@ -62,93 +64,69 @@ export default function PrivilegeTree({
         onChange(Array.from(next));
     };
 
+    const filteredPrivileges = filterPrivileges(privilegesDef, searchTerm);
+
     return (
-        <div className="space-y-4">
-            {privilegesDef.map((module) => {
+        <div className="space-y-6">
+            <Input placeholder="Rechercher un module ou privilège..." allowClear size="large" value={searchTerm} className="mb-4"
+                onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            {filteredPrivileges.map((module) => {
                 const moduleDescKeys = collectDescendantKeysFromNodes( module.children || [] );
                 const moduleChecked = isCheckedAll(moduleDescKeys);
                 const modulePartial = isIndeterminate(moduleDescKeys);
 
                 return (
-                    <div key={module.key} className="rounded-lg border bg-white p-4 shadow-sm" >
-                        <div className="flex items-center justify-between">
-                            <div className="font-semibold text-gray-800"> {module.title} </div>
-                            <Checkbox checked={moduleChecked} indeterminate={modulePartial}
-                            onChange={(e) => toggleKeys(moduleDescKeys, e.target.checked) }
+                    <div key={module.key} className="rounded-md border border-gray-200 bg-gradient-to-br from-white to-gray-50 shadow-md  transition-shadow duration-300" >
+                        <div className="flex items-center justify-between p-5 border-b border-gray-200 bg-white/80 rounded-t-mdl">
+                            <div className="flex items-center gap-3">
+                                <div className="w-1.5 h-8 bg-gradient-to-b from-blue-400 to-blue-500 rounded-full"></div>
+                                <h3 className="text-lg font-semibold text-blue-600">{module.title}</h3>
+                            </div>
+                            <Checkbox checked={moduleChecked} indeterminate={modulePartial} className="font-medium"
+                                onChange={(e) => toggleKeys(moduleDescKeys, e.target.checked)}
                             >
-                                Tout
+                                Tout sélectionner
                             </Checkbox>
                         </div>
 
                         {(module.children?.length || 0) > 0 && (
-                            <div className="mt-3 grid xl:grid-cols-3 lg:grid-cols-2 md:grid-cols-1 gap-4">
+                            <div className="p-5 grid xl:grid-cols-3 lg:grid-cols-2 grid-cols-1 gap-4">
                                 {(module.children || []).map((child) => {
                                     const childDescKeys = collectDescendantKeys(child);
                                     const childChecked = isCheckedAll(childDescKeys);
                                     const childPartial = isIndeterminate(childDescKeys);
 
-                                    // Tree shows only grand-children of child
                                     const grandNodes = toTreeData( child.children || [] );
                                     const grandDescKeys = collectDescendantKeysFromNodes( child.children || [] );
                                     const childCheckedKeys = value.filter((k) => grandDescKeys.includes(k));
 
                                     return (
-                                        <div key={child.key} className="rounded-lg border bg-white p-4" >
-                                            <div className="flex items-start justify-between mb-3">
-                                                <div>
-                                                    <span className="text-base font-medium text-blue-500 block">
-                                                        {child.title}
-                                                    </span>
-                                                </div>
-                                                <div className="flex items-center">
-                                                    <Checkbox checked={childChecked}
-                                                        indeterminate={ childPartial }
-                                                        onChange={(e) =>
-                                                            toggleKeys( childDescKeys, e.target.checked )
-                                                        }
-                                                    />
-                                                </div>
+                                        <div key={child.key} className="rounded-lg border border-gray-200 bg-white shadow-sm hover:shadow-md hover:border-blue-300 transition-all duration-200" >
+                                            <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-gray-200">
+                                                <span className="text-sm font-semibold text-gray-500"> {child.title} </span>
+                                                <Checkbox checked={childChecked} indeterminate={childPartial}
+                                                    onChange={(e) => toggleKeys( childDescKeys, e.target.checked ) }
+                                                />
                                             </div>
 
                                             {grandNodes.length > 0 && (
-                                                <div className="mt-3 rounded-lg border bg-gray-50 p-3">
+                                                <div className="p-3 bg-gray-50/50">
                                                     <Tree
                                                         checkable
                                                         defaultExpandAll
                                                         selectable={false}
                                                         treeData={grandNodes}
-                                                        checkedKeys={
-                                                            childCheckedKeys
-                                                        }
+                                                        checkedKeys={childCheckedKeys}
+                                                        className="privilege-tree"
                                                         onCheck={(keys) => {
-                                                            // Replace selection within this child's subtree with the provided keys
-                                                            const next =
-                                                                new Set(
-                                                                    selection
-                                                                );
-                                                            for (const k of grandDescKeys)
-                                                                next.delete(k);
-                                                            for (const k of keys as string[])
-                                                                next.add(k);
-                                                            // Sync child checkbox depending on completeness
-                                                            const allGrand =
-                                                                grandDescKeys.every(
-                                                                    (k) =>
-                                                                        next.has(
-                                                                            k
-                                                                        )
-                                                                );
-                                                            if (allGrand)
-                                                                next.add(
-                                                                    child.key
-                                                                );
-                                                            else
-                                                                next.delete(
-                                                                    child.key
-                                                                );
-                                                            onChange(
-                                                                Array.from(next)
-                                                            );
+                                                            const next = new Set(selection);
+                                                            for (const k of grandDescKeys) next.delete(k);
+                                                            for (const k of keys as string[]) next.add(k);
+                                                            const allGrand = grandDescKeys.every((k) => next.has(k));
+                                                            if (allGrand) next.add(child.key);
+                                                            else next.delete(child.key);
+                                                            onChange(Array.from(next));
                                                         }}
                                                     />
                                                 </div>

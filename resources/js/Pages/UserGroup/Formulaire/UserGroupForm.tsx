@@ -106,7 +106,6 @@ export default function UserGroupForm({
                     />
                     {/* Privileges selector */}
                     <div className="space-y-2">
-                        <div className="text-sm font-medium">Privilèges</div>
                         <PrivilegeTree
                             privilegesDef={privilegesDef}
                             value={data.privileges}

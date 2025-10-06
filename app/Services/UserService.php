@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\Repositories\UserRepository;
 use App\Services\BaseService;
+use App\Services\ExcelExportService;
+use App\Models\User;
 
 class UserService extends BaseService
 {
@@ -40,4 +42,17 @@ class UserService extends BaseService
         );
         return parent::getAll($filter);
     }
+
+public function exportUsers(ExcelExportService $excel)
+{
+    $map = [
+        "Nom" => 'name',
+        "Email" => 'email',
+        "Groupe d\'utilisateur" => 'group.name',
+    ];
+
+    $query = User::query()->with('group'); // ajouter vos filtres si besoin
+
+    return $excel->downloadFromQuery($query, $map, 'users');
+}
 }

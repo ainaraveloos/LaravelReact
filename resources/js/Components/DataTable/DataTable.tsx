@@ -1,6 +1,7 @@
 import usePermissions from "@/hooks/usePermissions";
 import type { Action, DataTableProps } from "@/types/DataTable";
 import { MoreOutlined } from "@ant-design/icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { router } from "@inertiajs/react";
 import { Button, Dropdown, Menu, Table } from "antd";
 
@@ -10,6 +11,7 @@ export function DataTable<T extends { id: number | string }>({
     actions = [],
     filters = {},
     endpoint,
+    actionOnDropdown = true,
     selectableRows = false,
     selectedIds = [],
     onSelectionChange,
@@ -26,13 +28,9 @@ export function DataTable<T extends { id: number | string }>({
     };
 
     const isActionVisible = (action: Action<T>, row: T) => {
-        const privilegeKey =
-            typeof action.privilege === "function"
-                ? action.privilege()
-                : action.privilege;
+        const privilegeKey = typeof action.privilege === "function" ? action.privilege() : action.privilege;
         const privilegeCheck = privilegeKey ? can(privilegeKey) : true;
-        if (action.visible !== undefined)
-            return privilegeCheck && action.visible(row);
+        if (action.visible !== undefined) return privilegeCheck && action.visible(row);
         return privilegeCheck;
     };
 
@@ -70,16 +68,23 @@ export function DataTable<T extends { id: number | string }>({
                     title: "Actions",
                     key: "actions",
                     fixed: "right",
-                    width: 96,
+                    allign:"center",
+                    width: actionOnDropdown ? 80 : 100,
                     render: (_: any, record: T) => {
                         const visibleActions = actions.filter((a) => isActionVisible(a, record));
                         if (visibleActions.length === 0) return null;
+                        if (actionOnDropdown) {
                         const menu = (
                             <Menu
                                 items={visibleActions.map((a, i) => ({
                                     key: i,
                                     disabled: isActionDisabled(a, record),
-                                    label: ( <span onClick={() => a.onClick(record)}>{a.label} </span> ),
+                                    label: (
+                                        <span onClick={() => a.onClick(record)} className={`text-gray-600 ${a.classStyle ?? ""}`}>
+                                            {a.icon && ( <FontAwesomeIcon className='mr-2' icon={a.icon}></FontAwesomeIcon> )}
+                                            {a.label}
+                                        </span>
+                                    ),
                                 }))}
                             />
                         );
@@ -88,16 +93,23 @@ export function DataTable<T extends { id: number | string }>({
                                 <Button size="small" icon={<MoreOutlined />} className="flex !items-center !justify-center"/>
                             </Dropdown>
                         );
+                        }
+                        return (
+                            <div className="flex gap-2">
+                                {visibleActions.map((a) => (
+                                    <span onClick={() => a.onClick(record)} className={`text-gray-600 ${a.classStyle ?? ""} hover:text-gray-900`}>
+                                        {a.icon && ( <FontAwesomeIcon icon={a.icon}></FontAwesomeIcon> )}
+                                    </span>
+                                ))}
+                            </div>
+                        )
                     },
                 },
             ] : []),
     ];
 
     const rowSelection = selectableRows
-        ? {
-            selectedRowKeys: selectedIds as (string | number)[],
-            onChange: (keys: any[]) => onSelectionChange && onSelectionChange(keys),
-        } : undefined;
+        ? {selectedRowKeys: selectedIds as (string | number)[],onChange: (keys: any[]) => onSelectionChange && onSelectionChange(keys)} : undefined;
 
     return (
         <div className="space-y-6">
@@ -108,7 +120,7 @@ export function DataTable<T extends { id: number | string }>({
                     rowKey={(r) => r.id}
                     pagination={false}
                     sticky
-                    scroll={{ x: 650, y: 500 }}
+                    scroll={{ x:'max-content'}}
                     rowSelection={rowSelection as any}
                     className="custom-table"
                 />
@@ -125,10 +137,34 @@ export function DataTable<T extends { id: number | string }>({
                             <span className="font-medium">{data.total}</span>{" "}
                             enregistrements
                         </span>
-                        <div className="flex gap-2">
+                        <div className="flex gap-2 items-center">
                             <Button disabled={data.current_page === 1} onClick={() => handlePageChange(data.current_page - 1)}>
                                 Précédent
                             </Button>
+
+                            {(() => {
+                                const currentPage = data.current_page;
+                                const lastPage = data.last_page;
+                                const pages: (number | string)[] = [];
+                                if (lastPage <= 7) { for (let i = 1; i <= lastPage; i++) pages.push(i)}
+                                else {
+                                    pages.push(1);
+                                    if (currentPage > 3) pages.push('...');
+                                    const start = Math.max(2, currentPage - 1);
+                                    const end = Math.min(lastPage - 1, currentPage + 1);
+                                    for (let i = start; i <= end; i++) pages.push(i);
+                                    if (currentPage < lastPage - 2) pages.push('...');
+                                    pages.push(lastPage);
+                                }
+                                return pages.map((page, idx) =>
+                                    typeof page === 'number' ? (
+                                        <Button key={page} type={page === currentPage ? 'primary' : 'default'} onClick={() => handlePageChange(page)} size="middle">
+                                            {page}
+                                        </Button>
+                                    ) : ( <span key={`ellipsis-${idx}`} className="px-2">...</span>)
+                                );
+                            })()}
+
                             <Button disabled={data.current_page === data.last_page} onClick={() => handlePageChange(data.current_page + 1)}>
                                 Suivant
                             </Button>

@@ -40,25 +40,44 @@ export default function HeaderBar({ items = [] as HeaderItem[] }) {
         return () => window.removeEventListener("resize", computeVisible);
     }, [items.length]);
 
-    const displayedItems = useMemo( () => items.slice(0, visibleCount), [items, visibleCount] );
-    const overflowItems = useMemo( () => items.slice(visibleCount), [items, visibleCount] );
-    if (!items || items.length === 0) { return null; }
+    const displayedItems = useMemo(
+        () => items.slice(0, visibleCount),
+        [items, visibleCount]
+    );
+    const overflowItems = useMemo(
+        () => items.slice(visibleCount),
+        [items, visibleCount]
+    );
+    if (!items || items.length === 0) {
+        return null;
+    }
 
     return (
         <div className="relative w-full">
             <nav className="flex items-center gap-2 sm:gap-3 lg:gap-4 overflow-x-auto no-scrollbar">
-                <Link as="button" href={route("menu")}
+                <Link
+                    as="button"
+                    href={route("menu")}
                     className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 lg:px-4 py-1.5 sm:py-2 rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors flex-shrink-0"
                 >
-                    <FontAwesomeIcon icon="house" className="h-3 w-3 sm:h-4 sm:w-4"/>
-
+                    <FontAwesomeIcon
+                        icon="house"
+                        className="h-3 w-3 sm:h-4 sm:w-4"
+                    />
                 </Link>
                 <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
                     {displayedItems.map((item) => {
-                        const isActive = item.routeName ? route().current(item.routeName) : false;
-                        const href = item.routeName ? route(item.routeName as any) : "#";
+                        const isActive = item.routeName
+                            ? route().current(item.routeName)
+                            : false;
+                        const href = item.routeName
+                            ? route(item.routeName as any)
+                            : "#";
                         return (
-                            <Link as="button" key={item.key} href={href}
+                            <Link
+                                as="button"
+                                key={item.key}
+                                href={href}
                                 className={
                                     "relative inline-flex items-center rounded-lg px-4 py-2 text-xs sm:text-sm font-medium transition-colors flex-shrink-0 whitespace-nowrap border " +
                                     (isActive
@@ -71,10 +90,20 @@ export default function HeaderBar({ items = [] as HeaderItem[] }) {
                         );
                     })}
                     {overflowItems.length > 0 && (
-                        <Dropdown trigger={["click"]} menu={{ items: overflowItems.map((item) => ({
+                        <Dropdown
+                            trigger={["click"]}
+                            menu={{
+                                items: overflowItems.map((item) => ({
                                     key: item.key,
                                     label: (
-                                        <Link href={ item.routeName ? (route( item.routeName as any ) as string) : "#" }
+                                        <Link
+                                            href={
+                                                item.routeName
+                                                    ? (route(
+                                                          item.routeName as any
+                                                      ) as string)
+                                                    : "#"
+                                            }
                                             className="block px-3 py-2 text-sm hover:bg-slate-50 rounded-md transition-colors text-slate-700"
                                         >
                                             {item.label}
@@ -83,10 +112,15 @@ export default function HeaderBar({ items = [] as HeaderItem[] }) {
                                 })),
                             }}
                         >
-                            <Button type="default" size="middle"
+                            <Button
+                                type="default"
+                                size="middle"
                                 className="inline-flex items-center bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 flex-shrink-0"
                             >
-                                <FontAwesomeIcon icon="ellipsis" className="h-3 w-3 sm:h-4 sm:w-4"/>
+                                <FontAwesomeIcon
+                                    icon="ellipsis"
+                                    className="h-3 w-3 sm:h-4 sm:w-4"
+                                />
                             </Button>
                         </Dropdown>
                     )}

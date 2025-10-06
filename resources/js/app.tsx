@@ -29,7 +29,6 @@ createInertiaApp({
                         colorSecondary: defaultTheme.colors.secondary,
                         colorText: defaultTheme.colors.foreground,
                         colorBgBase: defaultTheme.colors.background,
-                        borderRadius: 8,
                     },
                     algorithm: antdTheme.defaultAlgorithm,
                 }}

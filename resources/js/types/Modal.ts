@@ -10,7 +10,7 @@ export interface FormModalProps<T extends object> {
     onSubmit: (values: T) => void | Promise<void>;
     submitLabel?: string;
     cancelLabel?: string;
-    size?: "sm" | "md" | "lg" | "xl" | "2xl";
+    size?: "sm" | "md" | "lg" | "xl" | "2xl"|"full_screen";
     /**
      * Render form fields. You receive values and a setter to update them.
      */
