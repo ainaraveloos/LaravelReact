@@ -6,26 +6,12 @@ import { router } from "@inertiajs/react";
 import { Button, Dropdown, Menu, Table } from "antd";
 
 export function DataTable<T extends { id: number | string }>({
-    data,
-    columns,
-    actions = [],
-    filters = {},
-    endpoint,
-    actionOnDropdown = true,
-    selectableRows = false,
-    selectedIds = [],
-    onSelectionChange,
+data, columns, actions = [], filters = {}, endpoint, actionOnDropdown = true, selectableRows = false, selectedIds = [], onSelectionChange,
 }: DataTableProps<T>) {
     const { can } = usePermissions();
     const startIndex = (data.current_page - 1) * data.per_page;
 
-    const handlePageChange = (pageNum: number) => {
-        router.get(
-            endpoint,
-            { page: pageNum, ...filters },
-            { preserveState: true, preserveScroll: true }
-        );
-    };
+    const handlePageChange = (pageNum: number) => { router.get(endpoint, { page: pageNum, ...filters }, { preserveState: true, preserveScroll: true })};
 
     const isActionVisible = (action: Action<T>, row: T) => {
         const privilegeKey = typeof action.privilege === "function" ? action.privilege() : action.privilege;
@@ -45,7 +31,7 @@ export function DataTable<T extends { id: number | string }>({
             const colWidth = (col).width ?? 60;
             if (col.key === "index") {
                 return {
-                    title: col.label,
+                    title: col.label.toUpperCase(),
                     dataIndex: "_index",
                     key: "_index",
                     width: colWidth,
@@ -54,7 +40,7 @@ export function DataTable<T extends { id: number | string }>({
                 };
             }
             return {
-                title: col.label,
+                title: col.label.toUpperCase(),
                 dataIndex: col.key,
                 key: col.key,
                 align: colAlign,
@@ -65,7 +51,7 @@ export function DataTable<T extends { id: number | string }>({
         ...(actions.length > 0
             ? [
                 {
-                    title: "Actions",
+                    title: "ACTIONS",
                     key: "actions",
                     fixed: "right",
                     allign:"center",
@@ -109,18 +95,12 @@ export function DataTable<T extends { id: number | string }>({
     ];
 
     const rowSelection = selectableRows
-        ? {selectedRowKeys: selectedIds as (string | number)[],onChange: (keys: any[]) => onSelectionChange && onSelectionChange(keys)} : undefined;
+    ? {selectedRowKeys: selectedIds as (string | number)[],onChange: (keys: any[]) => onSelectionChange && onSelectionChange(keys)} : undefined;
 
     return (
         <div className="space-y-6">
             <div className="rounded-lg border bg-white shadow-sm overflow-x-auto">
-                <Table
-                    dataSource={data.data}
-                    columns={antdColumns as any}
-                    rowKey={(r) => r.id}
-                    pagination={false}
-                    sticky
-                    scroll={{ x:'max-content'}}
+                <Table dataSource={data.data} columns={antdColumns as any} rowKey={(r) => r.id} pagination={false} sticky scroll={{ x:'max-content'}}
                     rowSelection={rowSelection as any}
                     className="custom-table"
                 />
@@ -128,19 +108,14 @@ export function DataTable<T extends { id: number | string }>({
                 <div className="bg-white px-4 py-3 border-t">
                     <div className="flex items-center justify-between text-sm text-gray-600">
                         <span>
-                            Page{" "}
-                            <span className="font-medium text-gray-800">
-                                {" "}
-                                {data.current_page}{" "}
-                            </span>{" "}
-                            sur {data.last_page} — {" "}
-                            <span className="font-medium">{data.total}</span>{" "}
-                            enregistrements
+                            Page
+                            <span className="font-medium text-gray-800"> {" "} {data.current_page}{" "} </span>
+                            {" "} sur {data.last_page} — {" "}
+                            <span className="font-medium">{data.total}</span>
+                            {" "} enregistrements
                         </span>
                         <div className="flex gap-2 items-center">
-                            <Button disabled={data.current_page === 1} onClick={() => handlePageChange(data.current_page - 1)}>
-                                Précédent
-                            </Button>
+                            <Button disabled={data.current_page === 1} onClick={() => handlePageChange(data.current_page - 1)}> Précédent </Button>
 
                             {(() => {
                                 const currentPage = data.current_page;
@@ -158,16 +133,14 @@ export function DataTable<T extends { id: number | string }>({
                                 }
                                 return pages.map((page, idx) =>
                                     typeof page === 'number' ? (
-                                        <Button key={page} type={page === currentPage ? 'primary' : 'default'} onClick={() => handlePageChange(page)} size="middle">
+                                        <Button key={page} type={page === currentPage ? 'primary' : 'default'} onClick={() => handlePageChange(page)} size="middle" >
                                             {page}
                                         </Button>
                                     ) : ( <span key={`ellipsis-${idx}`} className="px-2">...</span>)
                                 );
                             })()}
 
-                            <Button disabled={data.current_page === data.last_page} onClick={() => handlePageChange(data.current_page + 1)}>
-                                Suivant
-                            </Button>
+                            <Button disabled={data.current_page === data.last_page} onClick={() => handlePageChange(data.current_page + 1)}> Suivant </Button>
                         </div>
                     </div>
                 </div>
