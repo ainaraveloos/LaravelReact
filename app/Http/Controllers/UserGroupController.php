@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 
 use App\Models\UserGroup;
+use App\Services\ExcelExportService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Utils\ExtractFiltre;
@@ -12,10 +13,12 @@ use App\Services\UserGroupService;
 class UserGroupController extends Controller
 {
     private $service;
+    private ExcelExportService $excelExportService;
 
-    public function __construct(UserGroupService $userGroupService)
+    public function __construct(UserGroupService $userGroupService,ExcelExportService $excelExportService)
     {
         $this->service = $userGroupService;
+        $this->excelExportService = $excelExportService;
     }
 
     public function index(Request $request)
@@ -121,6 +124,23 @@ class UserGroupController extends Controller
         } catch (\Exception $e) {
             return redirect()->route('group_user.index')->with('message.error', 'Une erreur est survenue lors de la suppression');
         }
+    }
+    public function exportExcel(Request $request)
+    {
+        // expected payload via POST form: map[0][header], map[0][field], ...
+        $data = $request->validate([
+            'map' => 'required|array|min:1',
+            'map.*.header' => 'required|string',
+            'map.*.field' => 'required|string',
+        ]);
+
+        $map = [];
+        foreach ($data['map'] as $item) {
+            $map[$item['header']] = $item['field'];
+        }
+
+        $query = UserGroup::query();
+        return $this->excelExportService->downloadFromQuery($query, $map, 'usergroups');
     }
 
 
