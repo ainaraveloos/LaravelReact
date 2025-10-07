@@ -1,4 +1,5 @@
 import { DataTable } from "@/Components/DataTable/DataTable";
+import ColumnPickerExport from "@/Components/Export/ColumnPickerExport";
 import FilterBase from "@/Components/Filter/FilterBase";
 import { FormDefaultSelect } from "@/Components/FormDefaultSelect";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
@@ -98,9 +99,9 @@ export default function UserIndex() {
     };
 
     const columns: Column<UserRow>[] = [
-        // { key: "index", label: "#" },
-        { key: "name", label: "Nom"},
-        { key: "email", label: "Email"},
+        { key: "index", label: "" },
+        { key: "name", label: "Nom" },
+        { key: "email", label: "Email" },
         { key: "user_group_name", label: "Groupe" },
     ];
 
@@ -108,11 +109,14 @@ export default function UserIndex() {
         {
             label: "Modifier",
             privilege: "user.edit",
+            icon: "edit",
             onClick: (row) => handleUpdate(row.id),
         },
         {
             label: "Supprimer",
             privilege: "user.destroy",
+            icon: "trash",
+            classStyle: "text-red-400 hover:text-red-500 duration-300",
             disabled: (row) => Boolean(row.is_you),
             onClick: (row) => {
                 if (!confirm("Supprimer cet utilisateur ?")) return;
@@ -148,13 +152,32 @@ export default function UserIndex() {
                 )}
                 renderAdd={() => (
                     <>
+                        <ColumnPickerExport
+                            exportUrl={route("user.export.excel")}
+                            buttonText="Exporter"
+                            columns={[
+                                { header: "Id", field: "id" },
+                                { header: "Nom", field: "name" },
+                                { header: "Email", field: "email" },
+                                {
+                                    header: "Groupe d'Utilisateur",
+                                    field: "group.name",
+                                },
+                            ]}
+                        />
                         {selectedIds.length > 0 && (
-                            <Button type="default" size="large" onClick={() => alert(selectedIds)}>
-                                Action
+                            <Button
+                                type="default"
+                                size="large"
+                                onClick={() => alert(selectedIds)}
+                            >
+                                {" "}
+                                Action{" "}
                             </Button>
                         )}
                         <Button type="primary" size="large" onClick={handleAdd}>
-                            Nouveau utilisateur
+                            {" "}
+                            Nouveau utilisateur{" "}
                         </Button>
                     </>
                 )}

@@ -40,6 +40,67 @@
         /* DataTable custom selection palette (non-primary) */
         --dt-selected-bg: #f6f8fb; /* soft neutral/blue-gray */
         --dt-selected-color: #1f2937; /* gray-800 for text */
+
+        /* Application specific colors */
+        --app-primary: 0 0% 9%; /* Dark primary */
+        --app-primary-foreground: 0 0% 98%;
+        --app-secondary: 0 0% 96.1%;
+        --app-secondary-foreground: 0 0% 9%;
+        --app-accent: 0 0% 96.1%;
+        --app-accent-foreground: 0 0% 9%;
+        --app-muted: 0 0% 96.1%;
+        --app-muted-foreground: 0 0% 45.1%;
+        --app-success: 142 76% 36%;
+        --app-success-foreground: 0 0% 98%;
+        --app-warning: 38 92% 50%;
+        --app-warning-foreground: 0 0% 9%;
+        --app-error: 0 84.2% 60.2%;
+        --app-error-foreground: 0 0% 98%;
+        --app-info: 217 91% 60%;
+        --app-info-foreground: 0 0% 98%;
+
+        /* Layout colors */
+        --app-header-bg: 0 0% 98%;
+        --app-header-border: 0 0% 89.8%;
+        --app-content-bg: 0 0% 100%;
+        --app-sidebar-bg: 0 0% 98%;
+        --app-sidebar-border: 0 0% 89.8%;
+
+        /* Form colors */
+        --app-input-bg: 0 0% 100%;
+        --app-input-border: 0 0% 89.8%;
+        --app-input-focus: 0 0% 3.9%;
+
+        /* Button colors */
+        --app-btn-primary: 0 0% 9%;
+        --app-btn-primary-foreground: 0 0% 98%;
+        --app-btn-secondary: 0 0% 96.1%;
+        --app-btn-secondary-foreground: 0 0% 9%;
+        --app-btn-outline: 0 0% 9%;
+        --app-btn-ghost: transparent;
+        --app-btn-ghost-foreground: 0 0% 9%;
+
+        /* Text colors */
+        --app-text-primary: 0 0% 3.9%;
+        --app-text-secondary: 0 0% 45.1%;
+        --app-text-muted: 0 0% 63.9%;
+        --app-text-inverse: 0 0% 98%;
+
+        /* Background colors */
+        --app-bg-primary: 0 0% 100%;
+        --app-bg-secondary: 0 0% 96.1%;
+        --app-bg-muted: 0 0% 96.1%;
+        --app-bg-card: 0 0% 100%;
+
+        /* Border colors */
+        --app-border: 0 0% 89.8%;
+        --app-border-muted: 0 0% 96.1%;
+        --app-border-strong: 0 0% 75%;
+
+        /* Shadow colors */
+        --app-shadow: 0 0% 0% / 0.1;
+        --app-shadow-lg: 0 0% 0% / 0.15;
+        --app-shadow-xl: 0 0% 0% / 0.2;
     }
     .dark {
         --background: 0 0% 3.9%;
@@ -74,6 +135,67 @@
         --sidebar-accent-foreground: 240 4.8% 95.9%;
         --sidebar-border: 240 3.7% 15.9%;
         --sidebar-ring: 217.2 91.2% 59.8%;
+
+        /* Dark mode application colors */
+        --app-primary: 0 0% 98%;
+        --app-primary-foreground: 0 0% 9%;
+        --app-secondary: 0 0% 14.9%;
+        --app-secondary-foreground: 0 0% 98%;
+        --app-accent: 0 0% 14.9%;
+        --app-accent-foreground: 0 0% 98%;
+        --app-muted: 0 0% 14.9%;
+        --app-muted-foreground: 0 0% 63.9%;
+        --app-success: 142 76% 36%;
+        --app-success-foreground: 0 0% 98%;
+        --app-warning: 38 92% 50%;
+        --app-warning-foreground: 0 0% 9%;
+        --app-error: 0 62.8% 30.6%;
+        --app-error-foreground: 0 0% 98%;
+        --app-info: 217 91% 60%;
+        --app-info-foreground: 0 0% 98%;
+
+        /* Dark mode layout colors */
+        --app-header-bg: 0 0% 3.9%;
+        --app-header-border: 0 0% 14.9%;
+        --app-content-bg: 0 0% 3.9%;
+        --app-sidebar-bg: 0 0% 3.9%;
+        --app-sidebar-border: 0 0% 14.9%;
+
+        /* Dark mode form colors */
+        --app-input-bg: 0 0% 3.9%;
+        --app-input-border: 0 0% 14.9%;
+        --app-input-focus: 0 0% 83.1%;
+
+        /* Dark mode button colors */
+        --app-btn-primary: 0 0% 98%;
+        --app-btn-primary-foreground: 0 0% 9%;
+        --app-btn-secondary: 0 0% 14.9%;
+        --app-btn-secondary-foreground: 0 0% 98%;
+        --app-btn-outline: 0 0% 98%;
+        --app-btn-ghost: transparent;
+        --app-btn-ghost-foreground: 0 0% 98%;
+
+        /* Dark mode text colors */
+        --app-text-primary: 0 0% 98%;
+        --app-text-secondary: 0 0% 63.9%;
+        --app-text-muted: 0 0% 45.1%;
+        --app-text-inverse: 0 0% 9%;
+
+        /* Dark mode background colors */
+        --app-bg-primary: 0 0% 3.9%;
+        --app-bg-secondary: 0 0% 14.9%;
+        --app-bg-muted: 0 0% 14.9%;
+        --app-bg-card: 0 0% 3.9%;
+
+        /* Dark mode border colors */
+        --app-border: 0 0% 14.9%;
+        --app-border-muted: 0 0% 14.9%;
+        --app-border-strong: 0 0% 25%;
+
+        /* Dark mode shadow colors */
+        --app-shadow: 0 0% 0% / 0.3;
+        --app-shadow-lg: 0 0% 0% / 0.4;
+        --app-shadow-xl: 0 0% 0% / 0.5;
     }
 }
 
@@ -186,7 +308,19 @@
     border-top-left-radius: 0 !important;
     border-top-right-radius: 0 !important;
 }
-
+.custom-table .ant-table-thead > tr > th {
+    @apply !py-2.5;
+}
+.custom-table .ant-table-thead > tr > th:not(:last-child):not(.ant-table-selection-column):not(.ant-table-row-expand-icon-cell):not([colspan])::before {
+    @apply !h-full !shadow-xl bg-white blur-xl w-1;
+}
+.custom-table .ant-checkbox .ant-checkbox-inner {
+    @apply w-3.5 h-3.5;
+}
+.custom-table .ant-table-body {
+    max-height: 680px !important;  /* ✅ limite max */
+    overflow-y: auto !important;   /* ✅ scroll seulement si nécessaire */
+}
 /* Also remove the parent wrapper's top radius when it contains a custom-table */
 .rounded-lg:has(.custom-table),
 .rounded-md:has(.custom-table),

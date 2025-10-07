@@ -23,6 +23,10 @@ Route::get('/test-image-upload', function () {
 })->name('test.image.upload');
 
 Route::middleware('auth')->group(function () {
+    Route::get('user/export-excel', [UserController::class, 'exportExcel'])->name('user.export.excel');
+    Route::get('usergroup/export-excel', [UserGroupController::class, 'exportExcel'])->name('usergroup.export.excel');
+
+
     Route::resource("user", UserController::class);
     Route::resource("group_user", UserGroupController::class);
 

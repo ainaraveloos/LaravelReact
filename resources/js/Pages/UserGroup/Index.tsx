@@ -1,13 +1,16 @@
 import { DataTable } from "@/Components/DataTable/DataTable";
+import ColumnPickerExport from "@/Components/Export/ColumnPickerExport";
+import FilterBase from "@/Components/Filter/FilterBase";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import type { PageProps } from "@/types";
 import type { Action, Column } from "@/types/DataTable";
 import { Head, router, usePage } from "@inertiajs/react";
 import { Button } from "antd";
 import { useEffect, useState } from "react";
-import UserGroupForm, { type UserGroupPayload } from "./Formulaire/UserGroupForm";
+import UserGroupForm, {
+    type UserGroupPayload,
+} from "./Formulaire/UserGroupForm";
 import type { UserGroupRow } from "./Types/Index";
-import FilterBase from "@/Components/Filter/FilterBase";
 
 type PageData = {
     data: {
@@ -43,16 +46,24 @@ export default function UserGroupIndex() {
     });
     const applyFilter = (filter: { search?: string }) => {
         setFilterState(filter);
-        router.get(route("group_user.index"), { ...filter }, { preserveScroll: true, preserveState: true });
+        router.get(
+            route("group_user.index"),
+            { ...filter },
+            { preserveScroll: true, preserveState: true }
+        );
     };
     const resetFilter = () => {
         setFilterState({ search: "" });
-        router.get(route("group_user.index"), { search: "" }, { preserveScroll: true, preserveState: true });
+        router.get(
+            route("group_user.index"),
+            { search: "" },
+            { preserveScroll: true, preserveState: true }
+        );
     };
     useEffect(() => {
         const f = flash as any;
         if (f && f.usergroup && f.usergroup.id) {
-            const u = f.usergroup
+            const u = f.usergroup;
             setMode("update");
             setInitialValues({
                 id: u.id,
@@ -85,11 +96,14 @@ export default function UserGroupIndex() {
         {
             label: "Modifier",
             privilege: "group_user.edit",
+            icon: "edit",
             onClick: (row) => handleUpdate(row.id),
         },
         {
             label: "Supprimer",
             privilege: "group_user.destroy",
+            icon: "trash",
+            classStyle: "text-red-400 hover:text-red-500 duration-300",
             onClick: (row) => {
                 if (!confirm("Supprimer ce groupe ?")) return;
                 router.delete(route("group_user.destroy", row.id));
@@ -106,9 +120,24 @@ export default function UserGroupIndex() {
                 onSearch={applyFilter}
                 onReset={resetFilter}
                 renderAdd={() => (
-                    <Button type="primary" size="large" onClick={handleCreate}>
-                        Créer un groupe
-                    </Button>
+                    <>
+                        <ColumnPickerExport
+                            columns={[
+                                { header: "Id", field: "id" },
+                                { header: "Nom", field: "name" },
+                            ]}
+                            exportUrl={route("usergroup.export.excel")}
+                            buttonText="Exporter"
+                        />
+                        <Button
+                            type="primary"
+                            size="large"
+                            onClick={handleCreate}
+                        >
+                            {" "}
+                            Créer un groupe{" "}
+                        </Button>
+                    </>
                 )}
             />
             <DataTable<UserGroupRow>
@@ -116,6 +145,7 @@ export default function UserGroupIndex() {
                 columns={columns}
                 actions={actions}
                 filters={filters}
+                actionOnDropdown={false}
                 endpoint={route("group_user.index")}
             />
 

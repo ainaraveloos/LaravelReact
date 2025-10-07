@@ -8,6 +8,8 @@ export type Column<T> = {
 
 export type Action<T> = {
     label: string;
+    icon?: string;
+    classStyle?: string;
     onClick: (row: T) => void;
     visible?: (row: T) => boolean;
     disabled?: (row: T) => boolean;
@@ -36,6 +38,5 @@ export interface DataTableProps<T> {
     selectableRows?: boolean;
     selectedIds?: Array<string | number>;
     onSelectionChange?: (ids: Array<string | number>) => void;
-    align?: "left" | "center" | "right";
-    width?: number;
+    actionOnDropdown?: boolean;
 }

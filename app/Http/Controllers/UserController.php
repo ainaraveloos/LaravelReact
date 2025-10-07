@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Services\UserGroupService;
 use App\Services\UserService;
+use App\Services\ExcelExportService;
 use App\Utils\ExtractFiltreUser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -18,11 +19,13 @@ class UserController extends Controller
 
     private $service;
     private UserGroupService $usergroupService;
+    private ExcelExportService $excelExportService;
 
-    public function __construct(UserService $userService, UserGroupService $userGroupService)
+    public function __construct(UserService $userService, UserGroupService $userGroupService, ExcelExportService $excelExportService)
     {
         $this->usergroupService = $userGroupService;
         $this->service = $userService;
+        $this->excelExportService = $excelExportService;
     }
 
     public function index(Request $request)
@@ -109,5 +112,23 @@ class UserController extends Controller
             return back()->with('message.error', $output['message']);
         }
         return back()->with('message.success', $output['message']);
+    }
+
+    public function exportExcel(Request $request)
+    {
+        // expected payload via POST form: map[0][header], map[0][field], ...
+        $data = $request->validate([
+            'map' => 'required|array|min:1',
+            'map.*.header' => 'required|string',
+            'map.*.field' => 'required|string',
+        ]);
+
+        $map = [];
+        foreach ($data['map'] as $item) {
+            $map[$item['header']] = $item['field'];
+        }
+
+        $query = User::query()->with('group');
+        return $this->excelExportService->downloadFromQuery($query, $map, 'users');
     }
 }

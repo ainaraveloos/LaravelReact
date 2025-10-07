@@ -1,8 +1,7 @@
-import Checkbox from "@/Components/Checkbox";
 import { FormInput } from "@/Components/FormInput";
 import GuestLayout from "@/Layouts/GuestLayout";
 import { Head, Link, useForm } from "@inertiajs/react";
-import { Button } from "antd";
+import { Button, Checkbox } from "antd";
 import { FormEventHandler } from "react";
 
 export default function Login({
@@ -28,39 +27,59 @@ export default function Login({
 
     return (
         <GuestLayout>
-            <Head title="Log in" />
+            <Head title="Connexion" />
             {status && (
-                <div className="mb-4 text-sm font-medium text-green-600">
-                    {" "}
-                    {status}{" "}
+                <div className="mb-4 rounded-md border border-green-200 bg-green-50 px-3 py-2 text-sm font-medium text-green-700">
+                    {status}
                 </div>
             )}
 
-            <form onSubmit={submit}>
-                <div className="space-y-4">
-                    <FormInput
-                        name="email"
-                        type="email"
-                        label="Email"
-                        value={data.email}
-                        error={errors.email}
-                        onChange={(name, value) => setData(name as any, value)}
-                    />
-
-                    <FormInput
-                        name="password"
-                        type="password"
-                        label="Password"
-                        value={data.password}
-                        error={errors.password}
-                        onChange={(name, value) => setData(name as any, value)}
-                    />
+            <form onSubmit={submit} className="space-y-6">
+                {/* Logo Section */}
+                <div className="flex items-center justify-center gap-3 mb-10 animate-slide-in">
+                    <span className="text-4xl font-bold text-yellow-500 logo-animation">
+                        LOGO
+                    </span>
                 </div>
 
-                <div className="mt-4 block">
-                    <label className="flex items-center">
+                {/* Email Field */}
+                <div>
+                    <div className="relative">
+                        <FormInput
+                            name="email"
+                            type="email"
+                            value={data.email}
+                            error={errors.email}
+                            onChange={(name, value) =>
+                                setData(name as any, value)
+                            }
+                            placeholder="exemple@medicare.com"
+                            className="w-full"
+                        />
+                    </div>
+                </div>
+
+                {/* Password Field */}
+                <div>
+                    <div className="relative">
+                        <FormInput
+                            name="password"
+                            type="password"
+                            value={data.password}
+                            error={errors.password}
+                            onChange={(name, value) =>
+                                setData(name as any, value)
+                            }
+                            placeholder="••••••••"
+                            className="w-full"
+                        />
+                    </div>
+                </div>
+
+                {/* Options */}
+                <div className="flex items-center justify-between">
+                    <label className="flex items-center space-x-2">
                         <Checkbox
-                            name="remember"
                             checked={data.remember}
                             onChange={(e) =>
                                 setData(
@@ -68,33 +87,35 @@ export default function Login({
                                     (e.target.checked || false) as false
                                 )
                             }
-                        />
-                        <span className="ms-2 text-sm text-gray-600">
-                            Remember me
-                        </span>
+                            className="text-slate-600"
+                        >
+                            <span className="text-sm text-gray-600">
+                                Se souvenir de moi
+                            </span>
+                        </Checkbox>
                     </label>
-                </div>
 
-                <div className="mt-4 flex items-center justify-end">
                     {canResetPassword && (
                         <Link
                             href={route("password.request")}
-                            className="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                            className="text-sm font-medium bg-gradient-to-r from-yellow-700 to-yellow-600 bg-clip-text text-transparent hover:from-yellow-500 hover:to-yellow-400 transition-colors duration-500"
                         >
-                            Forgot your password?
+                            Mot de passe oublié ?
                         </Link>
                     )}
-
-                    <Button
-                        size="large"
-                        type="primary"
-                        htmlType="submit"
-                        loading={processing}
-                        className="ms-4"
-                    >
-                        Connexion
-                    </Button>
                 </div>
+
+                {/* Submit Button */}
+                <Button
+                    size="large"
+                    type="primary"
+                    htmlType="submit"
+                    loading={processing}
+                    className="!mt-16"
+                    block
+                >
+                    Connexion
+                </Button>
             </form>
         </GuestLayout>
     );
